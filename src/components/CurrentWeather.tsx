@@ -45,6 +45,11 @@ export default function CurrentWeather() {
         <p className="text-slate-400 text-sm mt-2">
           Nhập tên thành phố hoặc sử dụng vị trí hiện tại
         </p>
+        <p className="text-slate-400 text-sm mt-1 italic">
+          💡 Nhấn <span className="font-semibold">Ctrl + K</span> để mở nhanh
+          thanh tìm kiếm
+        </p>
+        {/* 👆 Chú thích cho người dùng về Ctrl + K */}
       </div>
     );
   }
