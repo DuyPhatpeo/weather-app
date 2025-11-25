@@ -45,11 +45,17 @@ export default function CurrentWeather() {
         <p className="text-slate-400 text-sm mt-2">
           Nhập tên thành phố hoặc sử dụng vị trí hiện tại
         </p>
-        <p className="text-slate-400 text-sm mt-1 italic">
-          💡 Nhấn <span className="font-semibold">Ctrl + K</span> để mở nhanh
-          thanh tìm kiếm
+        <p className="text-slate-400 text-sm mt-1 italic flex items-center justify-center gap-1">
+          💡 Nhấn
+          <kbd className="px-2 py-1 bg-slate-200 text-slate-800 rounded border border-slate-300 font-semibold">
+            Ctrl
+          </kbd>
+          +
+          <kbd className="px-2 py-1 bg-slate-200 text-slate-800 rounded border border-slate-300 font-semibold">
+            K
+          </kbd>
+          để mở nhanh thanh tìm kiếm
         </p>
-        {/* 👆 Chú thích cho người dùng về Ctrl + K */}
       </div>
     );
   }
