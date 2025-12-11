@@ -1,101 +1,145 @@
 import { useWeatherStore } from "../stores/weatherStore";
-import { getWeatherInfo, formatDate } from "../utils/weatherUtils";
+import { getWeatherInfo } from "../utils/weatherUtils";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
 
 export default function ForecastList() {
   const daily = useWeatherStore((s) => s.daily);
-  const forecastDays = useWeatherStore((s) => s.forecastDays);
-  const setForecastDays = useWeatherStore((s) => s.setForecastDays);
   const selectedDate = useWeatherStore((s) => s.selectedDate);
   const setSelectedDate = useWeatherStore((s) => s.setSelectedDate);
 
-  if (!daily || daily.length === 0) return null;
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
-  const dayOptions = [3, 5, 7, 10, 14];
+  const checkScroll = () => {
+    if (!scrollRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+
+    setCanScrollLeft(scrollLeft > 0);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+  };
+
+  useEffect(() => {
+    checkScroll();
+    const el = scrollRef.current;
+    if (!el) return;
+
+    el.addEventListener("scroll", checkScroll);
+    window.addEventListener("resize", checkScroll);
+
+    return () => {
+      el.removeEventListener("scroll", checkScroll);
+      window.removeEventListener("resize", checkScroll);
+    };
+  }, [daily]);
+
+  if (!daily?.length) return null;
+
+  const scroll = (dir: "left" | "right") => {
+    if (!scrollRef.current) return;
+    scrollRef.current.scrollBy({
+      left: dir === "left" ? -300 : 300,
+      behavior: "smooth",
+    });
+    setTimeout(checkScroll, 150);
+  };
 
   return (
-    <div className="mt-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3 md:mb-4">
-        <h3 className="text-slate-800 text-lg md:text-xl font-bold flex items-center gap-2">
-          <div className="w-1 h-5 md:h-6 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full"></div>
-          <span className="text-sm md:text-xl">Dự báo {forecastDays} ngày</span>
-        </h3>
-        <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0 w-full sm:w-auto">
-          {dayOptions.map((days) => (
-            <button
-              key={days}
-              onClick={() => setForecastDays(days)}
-              className={`px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-sm md:text-base font-medium transition-all whitespace-nowrap ${
-                forecastDays === days
-                  ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md"
-                  : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
-              }`}
-            >
-              {days}d
-            </button>
-          ))}
+    <div className="mt-10 select-none">
+      {/* Header */}
+      <div className="flex items-center gap-4 mb-6">
+        <div className="w-2 h-10 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full shadow-lg"></div>
+        <div>
+          <h3 className="text-3xl font-bold text-slate-900">
+            Dự báo thời tiết
+          </h3>
+          <p className="text-sm text-slate-500 mt-1">10 ngày tới</p>
         </div>
       </div>
-      <div className="bg-white rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-xl border border-slate-200">
-        <div className="space-y-2">
-          {daily.map((d, idx) => {
-            const weatherInfo = getWeatherInfo(d.weatherCode);
-            const dateInfo = formatDate(d.date);
-            const isToday = idx === 0;
-            const isSelected = selectedDate === d.date;
 
-            return (
-              <div
-                key={d.date}
-                onClick={() => setSelectedDate(isSelected ? null : d.date)}
-                className={`flex items-center justify-between p-3 md:p-4 rounded-xl md:rounded-2xl transition-all cursor-pointer ${
-                  isSelected
-                    ? "bg-gradient-to-r from-blue-100 to-blue-50 border-2 border-blue-500 shadow-lg"
-                    : isToday
-                    ? "bg-gradient-to-r from-blue-50 to-transparent border-l-4 border-blue-400 hover:bg-blue-50"
-                    : "hover:bg-slate-50"
-                }`}
-              >
-                <div className="flex items-center gap-3 md:gap-5 flex-1 min-w-0">
-                  <div className="min-w-[90px] md:min-w-[110px]">
-                    <p
-                      className={`font-bold text-sm md:text-base ${
-                        isSelected
-                          ? "text-blue-700"
-                          : isToday
-                          ? "text-blue-600"
-                          : "text-slate-800"
-                      }`}
-                    >
-                      {dateInfo.main}
-                    </p>
-                    <p className="text-slate-500 text-xs md:text-sm">
-                      {dateInfo.sub}
-                    </p>
+      {/* Scroll area */}
+      <div className="relative -mx-6 px-6 py-2">
+        {canScrollLeft && (
+          <button
+            onClick={() => scroll("left")}
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white p-3 rounded-full shadow-xl border hover:border-blue-400 hover:bg-blue-50 active:scale-95 transition-all"
+          >
+            <ChevronLeft className="w-6 h-6 text-slate-700" />
+          </button>
+        )}
+
+        {canScrollRight && (
+          <button
+            onClick={() => scroll("right")}
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white p-3 rounded-full shadow-xl border hover:border-blue-400 hover:bg-blue-50 active:scale-95 transition-all"
+          >
+            <ChevronRight className="w-6 h-6 text-slate-700" />
+          </button>
+        )}
+
+        <div ref={scrollRef} className="overflow-x-auto scrollbar-hide">
+          <div className="flex gap-4 min-w-max pb-4">
+            {daily.slice(0, 10).map((d) => {
+              const info = getWeatherInfo(d.weatherCode);
+              const active = selectedDate === d.date;
+              const dateObj = new Date(d.date);
+
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+
+              const diff = Math.floor(
+                (dateObj.getTime() - today.getTime()) / 86400000
+              );
+
+              // ❌ Loại bỏ "Hôm qua"
+              const dayLabel =
+                diff === 0
+                  ? "Hôm nay"
+                  : ["CN", "T2", "T3", "T4", "T5", "T6", "T7"][
+                      dateObj.getDay()
+                    ];
+
+              return (
+                <div
+                  key={d.date}
+                  onClick={() => setSelectedDate(active ? null : d.date)}
+                  className={`
+                    relative w-32 h-40 p-4 rounded-2xl cursor-pointer flex flex-col border
+                    ${
+                      active
+                        ? "bg-white text-slate-900 shadow-lg border-blue-300"
+                        : "bg-white/90 text-slate-800 border-gray-200 shadow-sm"
+                    }
+                    transition-all
+                    /* ❌ bỏ scale khi hover & khi active */
+                  `}
+                >
+                  {/* Day + Label */}
+                  <div className="flex justify-between text-xs font-semibold opacity-90">
+                    <span className="text-lg font-bold">
+                      {dateObj.getDate()}
+                    </span>
+                    <span>{dayLabel}</span>
                   </div>
 
-                  <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
-                    <div className="text-3xl md:text-5xl drop-shadow flex-shrink-0">
-                      {weatherInfo.icon}
+                  {/* Icon + temp */}
+                  <div className="flex items-center justify-center gap-4 flex-1 mt-2">
+                    <div className="text-4xl text-slate-700">{info.icon}</div>
+
+                    <div className="flex flex-col leading-tight text-right">
+                      <span className="text-lg font-bold">
+                        {Math.round(d.tempMax)}°
+                      </span>
+                      <span className="text-sm opacity-70">
+                        {Math.round(d.tempMin)}°
+                      </span>
                     </div>
-                    <p className="text-slate-600 text-xs md:text-sm font-medium hidden lg:block truncate">
-                      {weatherInfo.desc}
-                    </p>
                   </div>
                 </div>
-
-                <div className="text-right flex-shrink-0">
-                  <div className="flex items-baseline gap-1.5 md:gap-2">
-                    <span className="text-slate-800 text-xl md:text-3xl font-bold">
-                      {Math.round(d.tempMax)}°
-                    </span>
-                    <span className="text-slate-400 text-base md:text-xl font-medium">
-                      {Math.round(d.tempMin)}°
-                    </span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
