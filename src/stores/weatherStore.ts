@@ -8,13 +8,15 @@ import type {
 import { fetchWeatherData } from "../api/weatherApi";
 
 export const useWeatherStore = create<WeatherState>((set, get) => ({
-  lat: undefined,
-  lon: undefined,
-  city: undefined,
+  // Mặc định Hồ Chí Minh
+  lat: 10.8231,
+  lon: 106.6297,
+  city: "Ho Chi Minh City",
+
   current: null,
   hourly: null,
   daily: null,
-  forecastDays: 7,
+  forecastDays: 10,
   selectedDate: null,
   loading: false,
   error: null,
@@ -23,6 +25,7 @@ export const useWeatherStore = create<WeatherState>((set, get) => ({
 
   setForecastDays: (days) => {
     set({ forecastDays: days });
+
     const { lat, lon } = get();
     if (lat && lon) {
       get().loadWeather(lat, lon);
@@ -54,16 +57,15 @@ export const useWeatherStore = create<WeatherState>((set, get) => ({
         time: data.current_weather?.time ?? new Date().toISOString(),
       };
 
-      // Store all hourly data
-      const allHourly: HourlyForecast[] = [];
-      for (let i = 0; i < data.hourly.time.length; i++) {
-        allHourly.push({
+      // Gộp toàn bộ hourly
+      const allHourly: HourlyForecast[] = data.hourly.time.map(
+        (_: any, i: number) => ({
           time: data.hourly.time[i],
           temperature: data.hourly.temperature_2m[i],
           weatherCode: data.hourly.weathercode[i],
           windSpeed: data.hourly.windspeed_10m[i],
-        });
-      }
+        })
+      );
 
       const daily: DailyForecast[] = data.daily.time.map(
         (d: string, i: number) => ({
@@ -74,7 +76,12 @@ export const useWeatherStore = create<WeatherState>((set, get) => ({
         })
       );
 
-      set({ current, hourly: allHourly, daily, loading: false });
+      set({
+        current,
+        hourly: allHourly,
+        daily,
+        loading: false,
+      });
     } catch (err: any) {
       set({ error: err.message ?? "Lỗi khi tải dữ liệu", loading: false });
     }
