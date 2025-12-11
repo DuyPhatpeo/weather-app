@@ -2,6 +2,13 @@ import { MapPin, Wind, Droplets, CloudRain, Loader2 } from "lucide-react";
 import { useWeatherStore } from "../stores/weatherStore";
 import { getWeatherInfo } from "../utils/weatherUtils";
 
+const getBackgroundByTemp = (temp: number): string => {
+  if (temp <= 10) return "from-blue-600 to-blue-800"; // lạnh
+  if (temp <= 20) return "from-cyan-500 to-blue-600"; // mát
+  if (temp <= 28) return "from-yellow-400 to-orange-500"; // ấm
+  return "from-red-500 to-orange-600"; // nóng
+};
+
 export default function CurrentWeather() {
   const current = useWeatherStore((s) => s.current);
   const city = useWeatherStore((s) => s.city);
@@ -61,9 +68,12 @@ export default function CurrentWeather() {
   }
 
   const weatherInfo = getWeatherInfo(current.weatherCode);
+  const bgColor = getBackgroundByTemp(current.temperature);
 
   return (
-    <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-3xl p-6 md:p-8 shadow-2xl text-white">
+    <div
+      className={`bg-gradient-to-br ${bgColor} rounded-3xl p-6 md:p-8 shadow-2xl text-white transition-all duration-500`}
+    >
       <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-6 md:mb-8">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
