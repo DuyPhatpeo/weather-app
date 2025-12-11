@@ -49,7 +49,7 @@ export default function ForecastList() {
     <div className="mt-10 select-none">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
-        <div className="w-2 h-10 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full shadow-lg"></div>
+        <div className="w-2 h-10 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full shadow-md"></div>
         <div>
           <h3 className="text-3xl font-bold text-slate-900">
             Dự báo thời tiết
@@ -58,7 +58,7 @@ export default function ForecastList() {
         </div>
       </div>
 
-      {/* Scroll area */}
+      {/* Scroll Area */}
       <div className="relative -mx-6 px-6 py-2">
         {canScrollLeft && (
           <button
@@ -78,7 +78,20 @@ export default function ForecastList() {
           </button>
         )}
 
-        <div ref={scrollRef} className="overflow-x-auto scrollbar-hide">
+        <div
+          ref={scrollRef}
+          className="overflow-x-auto scrollbar-hide"
+          style={{
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+          }}
+        >
+          <style>{`
+            .scrollbar-hide::-webkit-scrollbar {
+              display: none;
+            }
+          `}</style>
+
           <div className="flex gap-4 min-w-max pb-4">
             {daily.slice(0, 10).map((d) => {
               const info = getWeatherInfo(d.weatherCode);
@@ -92,10 +105,12 @@ export default function ForecastList() {
                 (dateObj.getTime() - today.getTime()) / 86400000
               );
 
-              // ❌ Loại bỏ "Hôm qua"
+              // ✔️ Thêm Hôm qua
               const dayLabel =
                 diff === 0
                   ? "Hôm nay"
+                  : diff === -1
+                  ? "Hôm qua"
                   : ["CN", "T2", "T3", "T4", "T5", "T6", "T7"][
                       dateObj.getDay()
                     ];
@@ -106,16 +121,15 @@ export default function ForecastList() {
                   onClick={() => setSelectedDate(active ? null : d.date)}
                   className={`
                     relative w-32 h-40 p-4 rounded-2xl cursor-pointer flex flex-col border
+                    transition-all 
                     ${
                       active
                         ? "bg-white text-slate-900 shadow-lg border-blue-300"
-                        : "bg-white/90 text-slate-800 border-gray-200 shadow-sm"
+                        : "bg-white/90 text-slate-800 border-gray-200 shadow-sm hover:shadow-md"
                     }
-                    transition-all
-                    /* ❌ bỏ scale khi hover & khi active */
                   `}
                 >
-                  {/* Day + Label */}
+                  {/* Ngày */}
                   <div className="flex justify-between text-xs font-semibold opacity-90">
                     <span className="text-lg font-bold">
                       {dateObj.getDate()}
@@ -123,7 +137,7 @@ export default function ForecastList() {
                     <span>{dayLabel}</span>
                   </div>
 
-                  {/* Icon + temp */}
+                  {/* Icon + Temp */}
                   <div className="flex items-center justify-center gap-4 flex-1 mt-2">
                     <div className="text-4xl text-slate-700">{info.icon}</div>
 
