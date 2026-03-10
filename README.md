@@ -68,7 +68,7 @@ git clone https://github.com/DuyPhatpeo/weather-app.git
 cd weather-app
 ```
 
-2. **Cài đặt dependencies**
+1. **Cài đặt dependencies**
 
 ```bash
 npm install
@@ -78,7 +78,7 @@ yarn install
 pnpm install
 ```
 
-3. **Chạy development server**
+1. **Chạy development server**
 
 ```bash
 npm run dev
@@ -88,11 +88,69 @@ yarn dev
 pnpm dev
 ```
 
-4. **Mở trình duyệt**
+1. **Mở trình duyệt**
 
 ```
 http://localhost:3000
 ```
+
+# ️ Premium Weather Elite
+
+A high-performance, visually stunning weather application built with **React**, **TypeScript**, and **Tailwind CSS**. Designed with a "Premium Flat Elite" aesthetic, focusing on bold typography, vibrant color blocking, and professional-grade user experience.
+
+![Weather App Screenshot](public/sreen.png)
+
+## ✨ Highlight Features
+
+### 🔍 Advanced Search Experience (v2.0)
+
+- **Super-Pod Design**: A unified, high-contrast search bar that integrates input, location pinning, and action buttons into a sleek pill-shaped container.
+- **Real-time Suggestions**: Intelligent auto-complete powered by the Open-Meteo Geocoding API with debouncing for a smooth experience.
+- **Keyboard Navigation**: Full support for `Arrow Up/Down` navigation and `Enter` selection within search results.
+- **Quick Shortcuts**: Global focus with `Ctrl + K` and trending location suggestions for instant discovery.
+
+### 📊 Comprehensive Weather Insights
+
+- **Poster-Style Current Weather**: High-impact display of primary metrics (Temp, Feels Like, Condition).
+- **Hourly Insight**: 24-hour horizontal forecast with an auto-scrolling "Now" indicator.
+- **7-Day Dynamic Forecast**: Detailed daily breakdowns including Sunrise/Sunset times and Precipitation probability.
+- **Contextual Weather Advice**: Smart recommendations for health and activities based on AQI (Air Quality Index), UV levels, and rain status.
+
+### 💎 Elite Design System
+
+- **Premium Aesthetics**: Bold weights (`font-black`), uppercase tracking, and curated HSL color palettes.
+- **Micro-animations**: Smooth transitions using **Framer Motion** for a high-end feel.
+- **Flat 2D Elevation**: Unique shadow system (`shadow-[12px_12px_0px_0px]`) that provides depth without skeuomorphism.
+
+## 🛠️ Tech Stack
+
+- **Framework**: React 18
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **State Management**: Zustand
+- **Animations**: Framer Motion
+- **Icons**: Lucide React
+- **API**: Open-Meteo (Weather, Air Quality, Geocoding)
+
+## 🚀 Getting Started
+
+1. **Clone the repository**:
+
+    ```bash
+    git clone https://github.com/DuyPhatpeo/weather-app.git
+    ```
+
+2. **Install dependencies**:
+
+    ```bash
+    npm install
+    ```
+
+3. **Run the development server**:
+
+    ```bash
+    npm run dev
+    ```
 
 ## 🏗️ Build production
 
@@ -104,100 +162,15 @@ yarn build
 pnpm build
 ```
 
-File build sẽ được tạo trong thư mục `dist/`
+## 👥 Contributing
 
-## 📖 Hướng dẫn sử dụng
-
-### 1. Tìm kiếm địa điểm
-
-- Nhập tên thành phố vào ô tìm kiếm
-- Nhấn nút "Tìm" hoặc Enter
-
-### 2. Sử dụng vị trí hiện tại
-
-- Nhấn nút 📍 bên cạnh ô tìm kiếm
-- Cho phép trình duyệt truy cập vị trí của bạn
-
-### 3. Xem dự báo theo giờ
-
-- Kéo ngang để xem các giờ tiếp theo
-- Click vào một ngày trong danh sách dự báo để xem dự báo theo giờ cho ngày đó
-
-### 4. Thay đổi số ngày dự báo
-
-- Nhấn các nút 3d, 5d, 7d, 10d, 14d để thay đổi số ngày hiển thị
-
-## 🔧 Cấu hình
-
-### API Endpoints
-
-Ứng dụng sử dụng các API công khai, không cần cấu hình API key:
-
-- **Weather Data**: https://api.open-meteo.com/v1/forecast
-- **Geocoding**: https://nominatim.openstreetmap.org/search
-
-### Tùy chỉnh
-
-Bạn có thể tùy chỉnh các thiết lập trong file `weatherStore.ts`:
-
-```typescript
-// Số ngày dự báo mặc định
-forecastDays: 7;
-
-// Thay đổi đơn vị nhiệt độ trong API params (weatherApi.ts)
-// Celsius (mặc định) hoặc Fahrenheit
-```
-
-## 📱 Responsive Design
-
-Ứng dụng được tối ưu cho các kích thước màn hình:
-
-- 📱 Mobile: < 640px
-- 💻 Tablet: 640px - 1024px
-- 🖥️ Desktop: > 1024px
-
-## 🎨 Tùy chỉnh giao diện
-
-Ứng dụng sử dụng Tailwind CSS, bạn có thể dễ dàng tùy chỉnh:
-
-- Colors: Sửa trong `tailwind.config.js`
-- Spacing: Thay đổi padding/margin trong components
-- Fonts: Cấu hình trong `index.css`
-
-## 🤝 Đóng góp
-
-Mọi đóng góp đều được hoan nghênh! Vui lòng:
-
-1. Fork project
-2. Tạo branch mới (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Mở Pull Request
-
-## 🐛 Bug Reports
-
-Nếu bạn phát hiện bug, vui lòng tạo issue mới với:
-
-- Mô tả chi tiết
-- Các bước tái hiện
-- Screenshots (nếu có)
-- Thông tin môi trường (browser, OS)
-
-## 👤 Tác giả
-
-**DuyPhatpeo**
-
-- GitHub: [@DuyPhatpeo](https://github.com/DuyPhatpeo)
-- Repository: [weather-app](https://github.com/DuyPhatpeo/weather-app)
-
-## 🙏 Cảm ơn
-
-- [Open-Meteo](https://open-meteo.com/) - Weather API miễn phí
-- [OpenStreetMap Nominatim](https://nominatim.org/) - Geocoding API
-- [Lucide Icons](https://lucide.dev/) - Beautiful icons
-- [Tailwind CSS](https://tailwindcss.com/) - Styling framework
-- [Zustand](https://zustand-demo.pmnd.rs/) - State management
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ---
+Built with ❤️ for a better weather experience.
 
 ⭐ Nếu bạn thấy project này hữu ích, hãy cho nó một star nhé!
