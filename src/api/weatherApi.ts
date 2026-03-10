@@ -1,30 +1,35 @@
+import axios from "axios";
+
+const weatherApi = axios.create({
+  baseURL: "https://api.open-meteo.com/v1",
+});
+
 export const fetchWeatherData = async (
   lat: number,
   lon: number,
   forecastDays: number
 ) => {
-  const params = new URLSearchParams({
-    latitude: lat.toString(),
-    longitude: lon.toString(),
-    timezone: "auto",
-    daily: "temperature_2m_max,temperature_2m_min,weathercode",
-    hourly: "temperature_2m,relativehumidity_2m,windspeed_10m,weathercode",
-    current_weather: "true",
-    forecast_days: forecastDays.toString(),
+  const { data } = await weatherApi.get("/forecast", {
+    params: {
+      latitude: lat,
+      longitude: lon,
+      timezone: "auto",
+      daily: "temperature_2m_max,temperature_2m_min,weathercode,uv_index_max",
+      hourly:
+        "temperature_2m,relativehumidity_2m,windspeed_10m,weathercode,uv_index,visibility,pressure_msl",
+      current_weather: true,
+      forecast_days: forecastDays,
+    },
   });
 
-  const res = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`);
-  if (!res.ok) throw new Error("Không thể tải dữ liệu thời tiết");
-
-  return await res.json();
+  return data;
 };
 
 export const searchLocation = async (query: string) => {
   const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
     query
   )}&limit=1`;
-  const res = await fetch(url);
-  const list = await res.json();
+  const { data: list } = await axios.get(url);
 
   if (list.length === 0) {
     throw new Error("Không tìm thấy địa điểm");

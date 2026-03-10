@@ -1,1 +1,54 @@
 @import "tailwindcss";
+@import "@fontsource/outfit/400.css";
+@import "@fontsource/outfit/500.css";
+@import "@fontsource/outfit/600.css";
+@import "@fontsource/outfit/700.css";
+@import "@fontsource/outfit/800.css";
+
+@theme {
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  
+  /* Flat Design Palette */
+  --color-flat-bg: #FFFFFF;
+  --color-flat-fg: #111827;
+  --color-flat-primary: #3B82F6;
+  --color-flat-secondary: #10B981;
+  --color-flat-accent: #F59E0B;
+  --color-flat-muted: #F3F4F6;
+  --color-flat-border: #E5E7EB;
+}
+
+@layer base {
+  body {
+    @apply font-sans bg-flat-bg text-flat-fg antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-extrabold tracking-tight;
+  }
+}
+
+@layer components {
+  .flat-button-primary {
+    @apply h-14 px-8 bg-flat-primary text-white rounded-md font-semibold
+           transition-all duration-200 hover:scale-105 active:scale-95
+           hover:bg-blue-600 shadow-none outline-none;
+  }
+  
+  .flat-button-secondary {
+    @apply h-14 px-8 bg-flat-muted text-flat-fg rounded-md font-semibold
+           transition-all duration-200 hover:scale-105 active:scale-95
+           hover:bg-gray-200 shadow-none outline-none;
+  }
+  
+  .flat-card {
+    @apply bg-white p-6 md:p-8 rounded-lg shadow-none border-none
+           transition-all duration-200 hover:scale-[1.02];
+  }
+  
+  .flat-input {
+    @apply bg-flat-muted px-4 h-14 rounded-md border-none text-flat-fg
+           focus:bg-white focus:ring-2 focus:ring-flat-primary focus:outline-none
+           transition-all duration-200;
+  }
+}

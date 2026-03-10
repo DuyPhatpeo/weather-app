@@ -1,93 +1,94 @@
-import { useState, useEffect } from "react";
-import SearchBar from "./components/SearchBar";
-import CurrentWeather from "./components/CurrentWeather";
-import HourlyForecast from "./components/HourlyForecast";
-import ForecastList from "./components/ForecastList";
-import { useWeatherStore } from "./stores/weatherStore";
+import { useEffect } from "react";
+import SearchBar from "./features/weather/components/SearchBar";
+import CurrentWeather from "./features/weather/components/CurrentWeather";
+import HourlyForecast from "./features/weather/components/HourlyForecast";
+import ForecastList from "./features/weather/components/ForecastList";
+import { useWeatherStore } from "./store/weatherStore";
+import { motion, AnimatePresence } from "framer-motion";
+import { CloudRain } from "lucide-react";
 
 export default function App() {
-  const [loading, setLoading] = useState(true);
-  const loadWeather = useWeatherStore((s) => s.loadWeather);
+  const { loadWeather, loading, current } = useWeatherStore();
 
-  // Auto load HCM default weather
   useEffect(() => {
     loadWeather();
-
-    const timer = setTimeout(() => setLoading(false), 1500);
-    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div className="min-h-screen p-3 sm:p-6 md:p-8 bg-gradient-to-br from-slate-100 via-blue-50 to-slate-100 relative overflow-hidden">
-      {/* ================= LOADER (fixed center) ================= */}
-      {loading && (
-        <div className="fixed inset-0 bg-white/90 flex flex-col items-center justify-center z-[9999]">
-          <div className="relative w-20 h-20 mb-4">
-            {/* Sun */}
-            <div className="absolute w-16 h-16 bg-yellow-400 rounded-full animate-pulse" />
+    <div className="min-h-screen bg-flat-bg p-4 sm:p-8 md:p-12 relative overflow-hidden font-sans">
+      {/* Background Poster Elements */}
+      <div className="fixed top-0 right-0 w-[600px] h-[600px] bg-flat-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 -z-10" />
+      <div className="fixed bottom-0 left-0 w-[400px] h-[400px] bg-flat-secondary/5 rounded-md rotate-45 -translate-x-1/2 translate-y-1/2 -z-10" />
 
-            {/* Cloud */}
-            <div className="absolute top-6 left-0 w-20 h-10 bg-white rounded-full animate-cloud" />
-
-            {/* Rain */}
-            <div className="absolute bottom-0 left-1 w-1 h-4 bg-blue-400 rounded animate-raindrop" />
-            <div className="absolute bottom-0 left-5 w-1 h-4 bg-blue-400 rounded animate-raindrop delay-200" />
-            <div className="absolute bottom-0 left-10 w-1 h-4 bg-blue-400 rounded animate-raindrop delay-400" />
-          </div>
-
-          <p className="text-blue-600 font-semibold text-lg">
-            Loading Weather...
-          </p>
-
-          {/* Keyframes */}
-          <style>{`
-            @keyframes cloud {
-              0% { transform: translateX(-10px); }
-              50% { transform: translateX(10px); }
-              100% { transform: translateX(-10px); }
-            }
-            @keyframes raindrop {
-              0% { transform: translateY(0); opacity: 1; }
-              80% { opacity: 1; }
-              100% { transform: translateY(10px); opacity: 0; }
-            }
-
-            .animate-cloud {
-              animation: cloud 2s linear infinite;
-            }
-            .animate-raindrop {
-              animation: raindrop 0.6s linear infinite;
-            }
-            .delay-200 {
-              animation-delay: 0.2s;
-            }
-            .delay-400 {
-              animation-delay: 0.4s;
-            }
-          `}</style>
-        </div>
-      )}
-
-      {/* ================= MAIN CONTENT ================= */}
-      <div
-        className={`max-w-5xl mx-auto transition-opacity duration-500 ${
-          loading ? "opacity-0" : "opacity-100"
-        }`}
-      >
-        <div className="mb-6 md:mb-8">
-          <h1 className="text-slate-800 text-3xl sm:text-4xl md:text-5xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-            Weather Forecast
-          </h1>
-          <p className="text-slate-600 text-base md:text-lg">
-            Dự báo thời tiết chính xác cho mọi địa điểm 🌤️
-          </p>
-        </div>
+      <main className="max-w-6xl mx-auto relative z-10">
+        <header className="mb-12 md:mb-16">
+          <motion.h1
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="text-5xl md:text-8xl font-black text-flat-fg tracking-tighter uppercase leading-[0.9] mb-4"
+          >
+            Weather <br />
+            <span className="text-flat-primary">Forecast</span>
+          </motion.h1>
+          <motion.p
+            initial={{ y: -10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="text-lg font-bold text-slate-400 uppercase tracking-widest"
+          >
+            Dự báo chính xác cho mọi địa điểm 🌤️
+          </motion.p>
+        </header>
 
         <SearchBar />
-        <CurrentWeather />
-        <ForecastList />
-        <HourlyForecast />
-      </div>
+
+        <AnimatePresence mode="wait">
+          {loading ? (
+            <motion.div
+              key="loader"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="space-y-8"
+            >
+              {/* Skeleton UI */}
+              <div className="h-96 bg-flat-muted rounded-lg animate-pulse" />
+              <div className="h-48 bg-flat-muted rounded-lg animate-pulse" />
+              <div className="h-64 bg-flat-muted rounded-lg animate-pulse" />
+            </motion.div>
+          ) : !current ? (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-flat-muted rounded-lg p-20 text-center border-4 border-dashed border-slate-200"
+            >
+              <div className="inline-flex items-center justify-center w-24 h-24 bg-white rounded-full mb-8">
+                <CloudRain className="text-slate-300" size={48} />
+              </div>
+              <h2 className="text-4xl font-black tracking-tight mb-4 uppercase">Chưa có dữ liệu</h2>
+              <p className="text-slate-400 font-bold uppercase tracking-widest">Tìm kiếm thành phố để bắt đầu</p>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="content"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-4"
+            >
+              <CurrentWeather />
+              <ForecastList />
+              <HourlyForecast />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <footer className="mt-24 py-12 border-t-8 border-flat-muted text-center">
+          <p className="text-sm font-black uppercase tracking-widest text-slate-400">
+            Weather App &copy; 2026 &bull; <span className="text-flat-primary">DINO PÉO</span>
+          </p>
+        </footer>
+      </main>
     </div>
   );
 }
