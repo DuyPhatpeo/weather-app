@@ -9,20 +9,33 @@ export const fetchWeatherData = async (
   lon: number,
   forecastDays: number
 ) => {
-  const { data } = await weatherApi.get("/forecast", {
-    params: {
-      latitude: lat,
-      longitude: lon,
-      timezone: "auto",
-      daily: "temperature_2m_max,temperature_2m_min,weathercode,uv_index_max",
-      hourly:
-        "temperature_2m,relativehumidity_2m,windspeed_10m,weathercode,uv_index,visibility,pressure_msl",
-      current_weather: true,
-      forecast_days: forecastDays,
-    },
-  });
+  const [weatherRes, aqiRes] = await Promise.all([
+    weatherApi.get("/forecast", {
+      params: {
+        latitude: lat,
+        longitude: lon,
+        timezone: "auto",
+        daily: "temperature_2m_max,temperature_2m_min,weathercode,uv_index_max,sunrise,sunset,precipitation_sum",
+        hourly:
+          "temperature_2m,apparent_temperature,relativehumidity_2m,windspeed_10m,weathercode,uv_index,visibility,pressure_msl,precipitation_probability",
+        current_weather: true,
+        forecast_days: forecastDays,
+        past_days: 1,
+      },
+    }),
+    axios.get("https://air-quality-api.open-meteo.com/v1/air-quality", {
+      params: {
+        latitude: lat,
+        longitude: lon,
+        hourly: "us_aqi,pm2_5,pm10,ozone",
+      },
+    }),
+  ]);
 
-  return data;
+  return {
+    ...weatherRes.data,
+    air_quality: aqiRes.data,
+  };
 };
 
 export const searchLocation = async (query: string) => {
@@ -41,4 +54,10 @@ export const searchLocation = async (query: string) => {
     lon: parseFloat(item.lon),
     cityName: item.display_name.split(",")[0],
   };
+};
+export const fetchSuggestions = async (query: string) => {
+  if (!query || query.length < 2) return [];
+  const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=en&format=json`;
+  const { data } = await axios.get(url);
+  return data.results || [];
 };

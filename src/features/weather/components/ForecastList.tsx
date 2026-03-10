@@ -1,6 +1,6 @@
 import { useWeatherStore } from "../../../store/weatherStore";
 import { getWeatherInfo } from "../../../utils/weatherUtils";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar, Sunrise, Sunset } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
@@ -35,10 +35,10 @@ export default function ForecastList() {
   const scroll = (dir: "left" | "right") => {
     if (!scrollRef.current) return;
     scrollRef.current.scrollBy({
-      left: dir === "left" ? -300 : 300,
+      left: dir === "left" ? -400 : 400,
       behavior: "smooth",
     });
-    setTimeout(checkScroll, 150);
+    setTimeout(checkScroll, 300);
   };
 
   const convertTemp = (temp: number) => {
@@ -47,32 +47,33 @@ export default function ForecastList() {
   };
 
   return (
-    <div className="mt-12 select-none">
+    <div className="mt-16 select-none">
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">
-          <div className="w-2 h-12 bg-flat-primary rounded-full"></div>
+          <div className="w-10 h-10 bg-flat-fg text-white flex items-center justify-center rounded-lg border-2 border-flat-border">
+            <Calendar size={20} />
+          </div>
           <div>
-            <h3 className="text-4xl font-black text-flat-fg tracking-tighter uppercase">
-              Dự báo
+            <h3 className="text-3xl font-black text-flat-fg tracking-tighter uppercase">
+              Extended <span className="text-slate-400">Forecast</span>
             </h3>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">10 ngày tới</p>
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <button
             onClick={() => scroll("left")}
             disabled={!canScrollLeft}
-            className="flat-button-secondary h-10 w-10 p-0 flex items-center justify-center disabled:opacity-20"
+            className="flat-button-secondary h-12 w-12 p-0 flex items-center justify-center disabled:opacity-20 transition-all active:scale-90"
           >
-            <ChevronLeft size={20} />
+            <ChevronLeft size={24} />
           </button>
           <button
             onClick={() => scroll("right")}
             disabled={!canScrollRight}
-            className="flat-button-secondary h-10 w-10 p-0 flex items-center justify-center disabled:opacity-20"
+            className="flat-button-secondary h-12 w-12 p-0 flex items-center justify-center disabled:opacity-20 transition-all active:scale-90"
           >
-            <ChevronRight size={20} />
+            <ChevronRight size={24} />
           </button>
         </div>
       </div>
@@ -80,50 +81,74 @@ export default function ForecastList() {
       <div className="relative">
         <div
           ref={scrollRef}
-          className="overflow-x-auto scrollbar-hide py-2"
+          className="overflow-x-auto scrollbar-hide py-10 px-4 -mx-4"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          <div className="flex gap-4 min-w-max">
+          <div className="flex gap-6 min-w-max">
             {daily.map((d, idx) => {
               const info = getWeatherInfo(d.weatherCode);
               const active = selectedDate === d.date;
               const dateObj = new Date(d.date);
 
-              const dayLabel = idx === 0 ? "Hôm nay" : idx === 1 ? "Ngày mai" :
-                ["CN", "T2", "T3", "T4", "T5", "T6", "T7"][dateObj.getDay()];
+              const dayName = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][dateObj.getDay()];
+              const dateLabel = dateObj.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
 
               return (
                 <motion.div
                   key={d.date}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: idx * 0.05 }}
                   onClick={() => setSelectedDate(active ? null : d.date)}
                   className={`
-                    w-40 p-6 rounded-lg cursor-pointer flex flex-col items-center gap-4 transition-all duration-200
+                    w-44 p-8 rounded-2xl cursor-pointer flex flex-col items-center gap-6 border-4 transition-all duration-300
                     ${active
-                      ? "bg-flat-primary text-white scale-105"
-                      : "bg-flat-muted text-flat-fg hover:bg-gray-200"
+                      ? "bg-white border-flat-primary scale-110 shadow-[12px_12px_0px_0px_rgba(37,99,235,1)] z-10"
+                      : "bg-white border-flat-border hover:border-slate-400 hover:-translate-y-1"
                     }
                   `}
                 >
-                  <span className="text-xs font-black uppercase tracking-widest opacity-70">
-                    {dayLabel}
-                  </span>
+                  <div className="text-center">
+                    <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${active ? 'text-flat-primary' : 'text-slate-400'}`}>
+                      {idx === 0 ? "Yesterday" : idx === 1 ? "Today" : dayName}
+                    </span>
+                    <div className="text-sm font-black text-flat-fg">{dateLabel}</div>
+                  </div>
 
-                  <span className="text-5xl">{info.icon}</span>
+                  <span className={`text-6xl ${active ? 'animate-float inline-block' : ''}`}>{info.icon}</span>
 
-                  <div className="flex flex-col items-center">
-                    <span className="text-2xl font-black">
+                  <div className="text-center">
+                    <div className="text-3xl font-black text-flat-fg leading-none mb-1">
                       {convertTemp(d.tempMax)}°
-                    </span>
-                    <span className="text-sm font-bold opacity-50">
+                    </div>
+                    <div className="text-sm font-bold text-slate-400">
                       {convertTemp(d.tempMin)}°
-                    </span>
+                    </div>
+                  </div>
+
+                  {/* Sun Info */}
+                  <div className="flex flex-col gap-2 w-full mt-2">
+                    {d.sunrise && (
+                      <div className="flex items-center justify-between px-3 py-1.5 rounded-lg border-2 border-amber-100 bg-amber-50/50">
+                        <Sunrise size={14} className="text-amber-500" />
+                        <span className="text-[10px] font-black tracking-widest text-amber-600">
+                          {new Date(d.sunrise).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                        </span>
+                      </div>
+                    )}
+                    {d.sunset && (
+                      <div className="flex items-center justify-between px-3 py-1.5 rounded-lg border-2 border-rose-100 bg-rose-50/50">
+                        <Sunset size={14} className="text-rose-500" />
+                        <span className="text-[10px] font-black tracking-widest text-rose-600">
+                          {new Date(d.sunset).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {d.uvIndex != null && (
-                    <div className={`text-[10px] font-bold uppercase tracking-tighter px-2 py-1 rounded ${active ? 'bg-white/20' : 'bg-white'}`}>
-                      UV: {Math.round(d.uvIndex)}
+                    <div className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border-2 w-full text-center ${active ? 'bg-flat-primary/10 border-flat-primary text-flat-primary' : 'bg-flat-muted border-flat-border text-slate-500'}`}>
+                      UV {Math.round(d.uvIndex)}
                     </div>
                   )}
                 </motion.div>

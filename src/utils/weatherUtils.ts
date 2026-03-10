@@ -90,9 +90,10 @@ export const formatHour = (
     }
   }
 
-  return date.toLocaleTimeString("vi-VN", {
-    hour: "2-digit",
+  return date.toLocaleTimeString("en-US", {
+    hour: "numeric",
     minute: "2-digit",
+    hour12: true,
   });
 };
 

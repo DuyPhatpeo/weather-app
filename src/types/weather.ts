@@ -7,6 +7,13 @@ export interface CurrentWeather {
   uvIndex?: number;
   visibility?: number;
   pressure?: number;
+  apparentTemperature?: number;
+  aqi?: number;
+  pm2_5?: number;
+  pm10?: number;
+  ozone?: number;
+  sunrise?: string;
+  sunset?: string;
 }
 
 export interface HourlyForecast {
@@ -15,6 +22,8 @@ export interface HourlyForecast {
   weatherCode: number;
   windSpeed: number;
   uvIndex?: number;
+  apparentTemperature?: number;
+  precipitationProbability?: number;
 }
 
 export interface DailyForecast {
@@ -23,6 +32,9 @@ export interface DailyForecast {
   tempMin: number;
   weatherCode: number;
   uvIndex?: number;
+  precipitationSum?: number;
+  sunrise?: string;
+  sunset?: string;
 }
 
 export interface WeatherState {
@@ -31,6 +43,7 @@ export interface WeatherState {
   city: string;
   unit: "celsius" | "fahrenheit";
   searchHistory: string[];
+  pinnedCities: string[];
   current: CurrentWeather | null;
   hourly: HourlyForecast[] | null;
   daily: DailyForecast[] | null;
@@ -38,9 +51,10 @@ export interface WeatherState {
   selectedDate: string | null;
   loading: boolean;
   error: string | null;
-  
+
   setCoords: (lat: number, lon: number, city: string) => void;
   setUnit: (unit: "celsius" | "fahrenheit") => void;
+  togglePinCity: (cityName: string) => void;
   addToHistory: (city: string) => void;
   setForecastDays: (days: number) => void;
   setSelectedDate: (date: string | null) => void;

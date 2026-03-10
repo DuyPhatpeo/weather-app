@@ -1,39 +1,22 @@
-import { MapPin, Wind, Droplets, Sun, Eye } from "lucide-react";
+import { Wind, Droplets, Sun, Navigation, Sunrise, Sunset, Wind as AirIcon } from "lucide-react";
 import { useWeatherStore } from "../../../store/weatherStore";
 import { getWeatherInfo } from "../../../utils/weatherUtils";
 import { motion } from "framer-motion";
 
 const getFlatColorByCode = (code: number): string => {
-  if ([0, 1].includes(code)) return "bg-flat-primary"; // Clear/Sunny - Blue
-  if ([2, 3, 45, 48].includes(code)) return "bg-slate-500"; // Cloudy/Fog - Gray
-  if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return "bg-flat-secondary"; // Rain - Emerald
-  if ([71, 73, 75, 77, 85, 86].includes(code)) return "bg-cyan-500"; // Snow
-  return "bg-slate-800"; // Storm
+  if ([0, 1].includes(code)) return "text-flat-primary"; // Clear/Sunny
+  if ([2, 3, 45, 48].includes(code)) return "text-slate-500"; // Cloudy
+  if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return "text-flat-secondary"; // Rain
+  return "text-flat-accent"; // Warning/Storm
 };
 
 export default function CurrentWeather() {
-  const { current, city, loading, error, unit, setUnit } = useWeatherStore();
+  const { current, city, loading, unit, setUnit } = useWeatherStore();
 
-  if (loading) return null; // We use skeletons in App.tsx
-
-  if (error) {
-    return (
-      <div className="bg-red-100 border-4 border-red-500 p-8 text-center rounded-lg mb-8">
-        <p className="text-red-700 text-xl font-bold mb-4">⚠️ {error}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="flat-button-primary bg-red-500 hover:bg-red-600"
-        >
-          Thử lại
-        </button>
-      </div>
-    );
-  }
-
-  if (!current) return null;
+  if (loading || !current) return null;
 
   const weatherInfo = getWeatherInfo(current.weatherCode);
-  const bgColorClass = getFlatColorByCode(current.weatherCode);
+  const textColorClass = getFlatColorByCode(current.weatherCode);
 
   const convertTemp = (temp: number) => {
     if (unit === "fahrenheit") return Math.round((temp * 9) / 5 + 32);
@@ -42,92 +25,129 @@ export default function CurrentWeather() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className={`${bgColorClass} text-white rounded-lg p-8 mb-8 relative overflow-hidden`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flat-card-base flat-card-hover border-flat-border relative overflow-hidden"
     >
-      {/* Dynamic Background Decoration */}
-      <div className="absolute top-[-50px] right-[-50px] w-64 h-64 bg-white/10 rounded-full" />
-      <div className="absolute bottom-[-20px] left-[-20px] w-32 h-32 bg-white/5 rounded-full" />
+      {/* Dynamic Accent Bar */}
+      <div className={`absolute top-0 left-0 w-full h-3 ${textColorClass.replace('text-', 'bg-')}`} />
 
-      <div className="relative z-10">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <MapPin size={24} className="text-white/80" />
-              <h2 className="text-3xl font-extrabold">{city}</h2>
+      <div className="flex flex-col lg:flex-row justify-between gap-12 pt-4">
+        {/* Left Side: Main Info */}
+        <div className="flex-1">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-14 h-14 bg-flat-muted flex items-center justify-center rounded-xl border-2 border-flat-border">
+              <Navigation className="text-flat-primary rotate-45" size={28} />
             </div>
-            <p className="text-white/80 font-medium uppercase tracking-widest text-sm">
-              {new Date().toLocaleDateString("vi-VN", {
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-              })}
-            </p>
+            <div>
+              <h2 className="text-4xl font-black text-flat-fg flex items-center gap-2">
+                {city}
+                <span className="w-3 h-3 bg-flat-secondary rounded-full animate-pulse" />
+              </h2>
+              <p className="font-bold text-slate-400 uppercase tracking-widest text-xs">
+                Elite Station &bull; {new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+              </p>
+            </div>
           </div>
 
-          <div className="flex bg-white/20 p-1 rounded-md">
-            <button
-              onClick={() => setUnit("celsius")}
-              className={`px-4 py-2 rounded-md font-bold transition-all ${unit === "celsius" ? "bg-white text-flat-fg scale-105" : "text-white hover:bg-white/10"
-                }`}
-            >
-              °C
-            </button>
-            <button
-              onClick={() => setUnit("fahrenheit")}
-              className={`px-4 py-2 rounded-md font-bold transition-all ${unit === "fahrenheit" ? "bg-white text-flat-fg scale-105" : "text-white hover:bg-white/10"
-                }`}
-            >
-              °F
-            </button>
+          <div className="flex items-center gap-10">
+            <div className="relative">
+              <div className="text-[10rem] md:text-[14rem] font-black tracking-tighter text-flat-fg leading-none">
+                {convertTemp(current.temperature)}°
+              </div>
+              <div className="absolute -bottom-2 left-2 flex items-center gap-2">
+                <span className="text-xs font-black uppercase tracking-widest text-slate-400">Feels like</span>
+                <span className="text-2xl font-black text-flat-primary">{convertTemp(current.apparentTemperature ?? current.temperature)}°</span>
+              </div>
+              <div className="absolute -top-4 -right-12">
+                <span className="text-6xl animate-float inline-block">{weatherInfo.icon}</span>
+              </div>
+            </div>
+
+            <div className="hidden md:block">
+              <div className={`text-3xl font-black uppercase tracking-tighter mb-1 ${textColorClass}`}>
+                {weatherInfo.desc}
+              </div>
+              <div className="px-4 py-2 bg-flat-muted border-2 border-flat-border rounded-lg inline-flex items-center gap-2">
+                <Sun size={16} className="text-flat-accent" />
+                <span className="text-sm font-black uppercase tracking-widest text-flat-fg">UV {current.uvIndex ?? 'N/A'}</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row items-center gap-8 mb-12">
-          <div className="text-9xl font-black tracking-tighter">
-            {convertTemp(current.temperature)}°
-          </div>
-          <div className="flex flex-col items-center md:items-start">
-            <span className="text-8xl mb-2">{weatherInfo.icon}</span>
-            <span className="text-3xl font-bold uppercase tracking-tight">{weatherInfo.desc}</span>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white/10 p-6 rounded-lg group hover:bg-white/20 transition-all hover:scale-105">
-            <div className="flex items-center gap-3 mb-4">
-              <Wind size={20} className="text-white/80" />
-              <span className="text-xs font-bold uppercase tracking-widest text-white/70">Gió</span>
+        {/* Right Side: Details Grid */}
+        <div className="lg:w-[450px]">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">Current Metrics</h3>
+            <div className="flex items-center border-4 border-flat-border rounded-xl p-1 bg-white">
+              <button
+                onClick={() => setUnit("celsius")}
+                className={`px-4 py-2 rounded-lg font-black text-xs transition-all ${unit === "celsius" ? "bg-flat-primary text-white" : "text-flat-fg hover:bg-flat-muted"}`}
+              >
+                CELSIUS
+              </button>
+              <button
+                onClick={() => setUnit("fahrenheit")}
+                className={`px-4 py-2 rounded-lg font-black text-xs transition-all ${unit === "fahrenheit" ? "bg-flat-primary text-white" : "text-flat-fg hover:bg-flat-muted"}`}
+              >
+                FAHRENHEIT
+              </button>
             </div>
-            <div className="text-2xl font-black">{current.windSpeed} <span className="text-sm font-medium">km/h</span></div>
-          </div>
-
-          <div className="bg-white/10 p-6 rounded-lg group hover:bg-white/20 transition-all hover:scale-105">
-            <div className="flex items-center gap-3 mb-4">
-              <Droplets size={20} className="text-white/80" />
-              <span className="text-xs font-bold uppercase tracking-widest text-white/70">Độ ẩm</span>
-            </div>
-            <div className="text-2xl font-black">{current.humidity}%</div>
           </div>
 
-          <div className="bg-white/10 p-6 rounded-lg group hover:bg-white/20 transition-all hover:scale-105">
-            <div className="flex items-center gap-3 mb-4">
-              <Sun size={20} className="text-white/80" />
-              <span className="text-xs font-bold uppercase tracking-widest text-white/70">UV Index</span>
-            </div>
-            <div className="text-2xl font-black">{current.uvIndex ?? "N/A"}</div>
-          </div>
-
-          <div className="bg-white/10 p-6 rounded-lg group hover:bg-white/20 transition-all hover:scale-105">
-            <div className="flex items-center gap-3 mb-4">
-              <Eye size={20} className="text-white/80" />
-              <span className="text-xs font-bold uppercase tracking-widest text-white/70">Tầm nhìn</span>
-            </div>
-            <div className="text-2xl font-black">{((current.visibility ?? 0) / 1000).toFixed(1)} <span className="text-sm font-medium">km</span></div>
+          <div className="grid grid-cols-2 gap-4">
+            <MetricCard
+              icon={<Wind size={22} />}
+              label="Wind Speed"
+              value={`${current.windSpeed} km/h`}
+              color="text-blue-500"
+            />
+            <MetricCard
+              icon={<Droplets size={22} />}
+              label="Humidity"
+              value={`${current.humidity}%`}
+              color="text-emerald-500"
+            />
+            <MetricCard
+              icon={<AirIcon size={22} />}
+              label="Air Quality"
+              value={`${current.aqi ?? 'N/A'} AQI`}
+              color="text-orange-500"
+            />
+            <MetricCard
+              icon={<Sunrise size={22} />}
+              label="Sunrise"
+              value={current.sunrise ? new Date(current.sunrise).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : 'N/A'}
+              color="text-amber-500"
+            />
+            <MetricCard
+              icon={<Sunset size={22} />}
+              label="Sunset"
+              value={current.sunset ? new Date(current.sunset).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : 'N/A'}
+              color="text-rose-500"
+            />
+            <MetricCard
+              icon={<Navigation size={22} />}
+              label="Pressure"
+              value={`${current.pressure ?? 'N/A'} hPa`}
+              color="text-purple-500"
+            />
           </div>
         </div>
       </div>
     </motion.div>
+  );
+}
+
+function MetricCard({ icon, label, value, color }: { icon: any; label: string; value: string; color: string }) {
+  return (
+    <div className="bg-flat-bg border-2 border-flat-border rounded-xl p-4 transition-all hover:border-flat-primary group">
+      <div className={`w-10 h-10 bg-white border-2 border-flat-border flex items-center justify-center rounded-lg mb-4 ${color} transition-transform group-hover:scale-110`}>
+        {icon}
+      </div>
+      <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{label}</div>
+      <div className="text-xl font-black text-flat-fg">{value}</div>
+    </div>
   );
 }

@@ -3,9 +3,10 @@ import SearchBar from "./features/weather/components/SearchBar";
 import CurrentWeather from "./features/weather/components/CurrentWeather";
 import HourlyForecast from "./features/weather/components/HourlyForecast";
 import ForecastList from "./features/weather/components/ForecastList";
+import WeatherAdvice from "./features/weather/components/WeatherAdvice";
 import { useWeatherStore } from "./store/weatherStore";
 import { motion, AnimatePresence } from "framer-motion";
-import { CloudRain } from "lucide-react";
+import { CloudRain, Sparkles } from "lucide-react";
 
 export default function App() {
   const { loadWeather, loading, current } = useWeatherStore();
@@ -16,31 +17,59 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-flat-bg p-4 sm:p-8 md:p-12 relative overflow-hidden font-sans">
-      {/* Background Poster Elements */}
-      <div className="fixed top-0 right-0 w-[600px] h-[600px] bg-flat-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 -z-10" />
-      <div className="fixed bottom-0 left-0 w-[400px] h-[400px] bg-flat-secondary/5 rounded-md rotate-45 -translate-x-1/2 translate-y-1/2 -z-10" />
+      {/* Premium Background Decorations */}
+      <div className="fixed top-0 right-0 w-[800px] h-[800px] bg-flat-primary/5 rounded-full -translate-y-1/2 translate-x-1/3 -z-10 border-40 border-flat-primary/5" />
+      <div className="fixed bottom-0 left-0 w-[500px] h-[500px] bg-flat-secondary/5 rounded-xl rotate-12 -translate-x-1/2 translate-y-1/3 -z-10 border-20 border-flat-secondary/5" />
+      <div className="fixed top-1/2 left-1/4 w-24 h-24 bg-flat-accent/10 rounded-full blur-3xl -z-10 animate-pulse" />
+
+      {/* Floating Geometric Shapes */}
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        className="fixed top-20 left-10 w-12 h-12 border-4 border-flat-primary/20 rounded-lg -z-10 hidden lg:block"
+      />
 
       <main className="max-w-6xl mx-auto relative z-10">
-        <header className="mb-12 md:mb-16">
-          <motion.h1
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="text-5xl md:text-8xl font-black text-flat-fg tracking-tighter uppercase leading-[0.9] mb-4"
-          >
-            Weather <br />
-            <span className="text-flat-primary">Forecast</span>
-          </motion.h1>
-          <motion.p
-            initial={{ y: -10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            className="text-lg font-bold text-slate-400 uppercase tracking-widest"
-          >
-            Dự báo chính xác cho mọi địa điểm 🌤️
-          </motion.p>
+        <header className="mb-16 md:mb-24 flex flex-col md:flex-row md:items-end justify-between gap-8">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-flat-primary rounded-lg text-white">
+                <Sparkles size={24} />
+              </div>
+              <span className="text-sm font-black uppercase tracking-[0.2em] text-flat-primary">Weather App Elite</span>
+            </div>
+            <motion.h1
+              initial={{ x: -50, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              className="text-6xl md:text-[8rem] font-black text-flat-fg tracking-tighter uppercase leading-[0.85]"
+            >
+              The <br />
+              <span className="text-flat-primary">Weather</span>
+            </motion.h1>
+          </div>
+          <div className="md:text-right max-w-sm">
+            <motion.p
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-xl font-bold text-slate-500 uppercase tracking-tight mb-4"
+            >
+              Precision forecasting powered by <span className="text-flat-fg font-black">Dino Péo</span> technology.
+            </motion.p>
+            <div className="h-2 w-full bg-flat-border rounded-full overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: "100%" }}
+                transition={{ duration: 1.5, ease: "easeOut" }}
+                className="h-full bg-flat-primary"
+              />
+            </div>
+          </div>
         </header>
 
-        <SearchBar />
+        <section className="mb-12">
+          <SearchBar />
+        </section>
 
         <AnimatePresence mode="wait">
           {loading ? (
@@ -51,42 +80,51 @@ export default function App() {
               exit={{ opacity: 0 }}
               className="space-y-8"
             >
-              {/* Skeleton UI */}
-              <div className="h-96 bg-flat-muted rounded-lg animate-pulse" />
-              <div className="h-48 bg-flat-muted rounded-lg animate-pulse" />
-              <div className="h-64 bg-flat-muted rounded-lg animate-pulse" />
+              <div className="h-[450px] bg-white border-4 border-flat-border rounded-xl animate-pulse" />
+              <div className="flex gap-4">
+                {[1, 2, 3, 4].map(i => <div key={i} className="h-48 w-full bg-white border-4 border-flat-border rounded-xl animate-pulse" />)}
+              </div>
             </motion.div>
           ) : !current ? (
             <motion.div
               key="empty"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-flat-muted rounded-lg p-20 text-center border-4 border-dashed border-slate-200"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-xl p-24 text-center border-4 border-flat-border relative overflow-hidden group"
             >
-              <div className="inline-flex items-center justify-center w-24 h-24 bg-white rounded-full mb-8">
-                <CloudRain className="text-slate-300" size={48} />
+              <div className="absolute top-0 left-0 w-full h-2 bg-flat-primary" />
+              <div className="inline-flex items-center justify-center w-32 h-32 bg-flat-muted rounded-full mb-10 transition-transform group-hover:scale-110 duration-500">
+                <CloudRain className="text-flat-primary" size={64} />
               </div>
-              <h2 className="text-4xl font-black tracking-tight mb-4 uppercase">Chưa có dữ liệu</h2>
-              <p className="text-slate-400 font-bold uppercase tracking-widest">Tìm kiếm thành phố để bắt đầu</p>
+              <h2 className="text-5xl font-black tracking-tight mb-6 uppercase text-flat-fg">Ready for search</h2>
+              <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-sm">Enter a city name above to unlock elite forecast</p>
             </motion.div>
           ) : (
             <motion.div
               key="content"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              className="space-y-4"
+              className="space-y-12"
             >
               <CurrentWeather />
+              <WeatherAdvice />
               <ForecastList />
               <HourlyForecast />
             </motion.div>
           )}
         </AnimatePresence>
 
-        <footer className="mt-24 py-12 border-t-8 border-flat-muted text-center">
-          <p className="text-sm font-black uppercase tracking-widest text-slate-400">
-            Weather App &copy; 2026 &bull; <span className="text-flat-primary">DINO PÉO</span>
-          </p>
+        <footer className="mt-40 py-16 border-t-4 border-flat-border flex flex-col md:flex-row justify-between items-center gap-8 group">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-flat-fg text-white flex items-center justify-center font-black text-2xl rounded-lg group-hover:bg-flat-primary transition-colors duration-500">D</div>
+            <p className="text-lg font-black uppercase tracking-widest text-flat-fg">
+              Weather App Elite &bull; 2026
+            </p>
+          </div>
+          <div className="text-center md:text-right">
+            <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Designed with passion by</p>
+            <span className="text-2xl font-black text-flat-primary tracking-tighter">DINO PÉO STUDIO</span>
+          </div>
         </footer>
       </main>
     </div>
