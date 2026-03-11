@@ -28,7 +28,7 @@ export default function CurrentWeather() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flat-card-base flat-card-hover border-flat-border relative overflow-hidden"
+      className={`flat-card-base flat-card-hover border-flat-border relative overflow-hidden ${tempColors.bg}/5`}
     >
       {/* Dynamic Accent Bar */}
       <div className={`absolute top-0 left-0 w-full h-3 ${textColorClass.replace('text-', 'bg-')}`} />
@@ -53,7 +53,7 @@ export default function CurrentWeather() {
 
           <div className="flex items-center gap-10">
             <div className="relative">
-              <div className="text-[10rem] md:text-[14rem] font-black tracking-tighter text-flat-fg leading-none">
+              <div className={`text-[10rem] md:text-[14rem] font-black tracking-tighter ${tempColors.text} leading-none drop-shadow-sm`}>
                 {convertTemp(current.temperature)}°
               </div>
               <div className="absolute -bottom-2 left-2 flex items-center gap-2">
