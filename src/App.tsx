@@ -4,6 +4,8 @@ import CurrentWeather from "./features/weather/components/CurrentWeather";
 import HourlyForecast from "./features/weather/components/HourlyForecast";
 import ForecastList from "./features/weather/components/ForecastList";
 import WeatherAdvice from "./features/weather/components/WeatherAdvice";
+import EnvironmentalDashboard from "./features/weather/components/EnvironmentalDashboard";
+import DynamicBackground from "./features/weather/components/DynamicBackground";
 import { useWeatherStore } from "./store/weatherStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { CloudRain, Sparkles } from "lucide-react";
@@ -17,6 +19,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-flat-bg p-4 sm:p-8 md:p-12 relative overflow-hidden font-sans">
+      <DynamicBackground />
       {/* Premium Background Decorations */}
       <div className="fixed top-0 right-0 w-[800px] h-[800px] bg-flat-primary/5 rounded-full -translate-y-1/2 translate-x-1/3 -z-10 border-40 border-flat-primary/5" />
       <div className="fixed bottom-0 left-0 w-[500px] h-[500px] bg-flat-secondary/5 rounded-xl rotate-12 -translate-x-1/2 translate-y-1/3 -z-10 border-20 border-flat-secondary/5" />
@@ -107,6 +110,7 @@ export default function App() {
               className="space-y-12"
             >
               <CurrentWeather />
+              <EnvironmentalDashboard />
               <WeatherAdvice />
               <ForecastList />
               <HourlyForecast />
