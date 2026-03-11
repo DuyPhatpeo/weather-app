@@ -1,5 +1,5 @@
 import { useWeatherStore } from "../../../store/weatherStore";
-import { getWeatherInfo } from "../../../utils/weatherUtils";
+import { getWeatherInfo, getTemperatureColor } from "../../../utils/weatherUtils";
 import { ChevronLeft, ChevronRight, Calendar, Sunrise, Sunset } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -118,7 +118,7 @@ export default function ForecastList() {
                   <span className={`text-6xl ${active ? 'animate-float inline-block' : ''}`}>{info.icon}</span>
 
                   <div className="text-center">
-                    <div className="text-3xl font-black text-flat-fg leading-none mb-1">
+                    <div className={`text-3xl font-black leading-none mb-1 ${getTemperatureColor(d.tempMax).text}`}>
                       {convertTemp(d.tempMax)}°
                     </div>
                     <div className="text-sm font-bold text-slate-400">

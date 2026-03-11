@@ -131,3 +131,11 @@ export const formatDate = (dateStr: string) => {
     sub: date.toLocaleDateString("vi-VN", { day: "numeric", month: "short" }),
   };
 };
+
+export const getTemperatureColor = (temp: number): { text: string; bg: string; border: string; glow: string } => {
+  if (temp <= 0) return { text: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200", glow: "shadow-blue-500/20" };
+  if (temp <= 15) return { text: "text-sky-500", bg: "bg-sky-50", border: "border-sky-200", glow: "shadow-sky-500/20" };
+  if (temp <= 25) return { text: "text-emerald-500", bg: "bg-emerald-50", border: "border-emerald-200", glow: "shadow-emerald-500/20" };
+  if (temp <= 32) return { text: "text-amber-500", bg: "bg-amber-50", border: "border-amber-200", glow: "shadow-amber-500/20" };
+  return { text: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200", glow: "shadow-rose-500/20" };
+};

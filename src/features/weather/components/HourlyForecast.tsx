@@ -1,6 +1,6 @@
 import { Wind, Clock, Droplets } from "lucide-react";
 import { useWeatherStore } from "../../../store/weatherStore";
-import { getWeatherInfo, formatHour } from "../../../utils/weatherUtils";
+import { getWeatherInfo, formatHour, getTemperatureColor } from "../../../utils/weatherUtils";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
@@ -116,7 +116,7 @@ export default function HourlyForecast() {
                     {isNow && <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white" />}
                   </div>
 
-                  <span className="text-4xl font-black text-flat-fg">
+                  <span className={`text-4xl font-black ${getTemperatureColor(h.temperature).text}`}>
                     {convertTemp(h.temperature)}°
                   </span>
 

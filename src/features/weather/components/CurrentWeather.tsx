@@ -1,6 +1,6 @@
 import { Wind, Droplets, Sun, Navigation, Sunrise, Sunset, Wind as AirIcon } from "lucide-react";
 import { useWeatherStore } from "../../../store/weatherStore";
-import { getWeatherInfo } from "../../../utils/weatherUtils";
+import { getWeatherInfo, getTemperatureColor } from "../../../utils/weatherUtils";
 import { motion } from "framer-motion";
 
 const getFlatColorByCode = (code: number): string => {
@@ -17,6 +17,7 @@ export default function CurrentWeather() {
 
   const weatherInfo = getWeatherInfo(current.weatherCode);
   const textColorClass = getFlatColorByCode(current.weatherCode);
+  const tempColors = getTemperatureColor(current.temperature);
 
   const convertTemp = (temp: number) => {
     if (unit === "fahrenheit") return Math.round((temp * 9) / 5 + 32);
@@ -42,7 +43,7 @@ export default function CurrentWeather() {
             <div>
               <h2 className="text-4xl font-black text-flat-fg flex items-center gap-2">
                 {city}
-                <span className="w-3 h-3 bg-flat-secondary rounded-full animate-pulse" />
+                <span className={`w-3 h-3 rounded-full animate-pulse ${tempColors.bg.replace('bg-', 'bg-')}`} style={{ backgroundColor: 'currentColor' }} />
               </h2>
               <p className="font-bold text-slate-400 uppercase tracking-widest text-xs">
                 Elite Station &bull; {new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
@@ -57,7 +58,7 @@ export default function CurrentWeather() {
               </div>
               <div className="absolute -bottom-2 left-2 flex items-center gap-2">
                 <span className="text-xs font-black uppercase tracking-widest text-slate-400">Feels like</span>
-                <span className="text-2xl font-black text-flat-primary">{convertTemp(current.apparentTemperature ?? current.temperature)}°</span>
+                <span className={`text-2xl font-black ${tempColors.text}`}>{convertTemp(current.apparentTemperature ?? current.temperature)}°</span>
               </div>
               <div className="absolute -top-4 -right-12">
                 <span className="text-6xl animate-float inline-block">{weatherInfo.icon}</span>

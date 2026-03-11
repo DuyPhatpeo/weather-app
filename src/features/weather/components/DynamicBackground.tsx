@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useWeatherStore } from '../../../store/weatherStore';
+import { getTemperatureColor } from '../../../utils/weatherUtils';
 
 interface Particle {
     x: number;
@@ -34,7 +35,7 @@ export default function DynamicBackground() {
         const initParticles = () => {
             particles = [];
             let count = 0;
-            
+
             // Drizzle/Rain/Storm
             if (weatherCode >= 51 && weatherCode <= 82) {
                 count = weatherCode >= 61 ? 150 : 80; // More rain for heavier codes
@@ -116,10 +117,20 @@ export default function DynamicBackground() {
 
     const isCloudy = current?.weatherCode && current.weatherCode >= 1 && current.weatherCode <= 48;
     const isStorm = current?.weatherCode && [95, 96, 99].includes(current.weatherCode);
+    const tempColors = current ? getTemperatureColor(current.temperature) : null;
 
     return (
         <div className="fixed inset-0 -z-20 pointer-events-none overflow-hidden bg-flat-bg">
             <AnimatePresence>
+                {/* Temperature Overlay */}
+                {tempColors && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 0.05 }}
+                        className={`absolute inset-0 ${tempColors.bg}`}
+                    />
+                )}
+
                 {/* Sunlight for Clear Sky */}
                 {current?.weatherCode === 0 && (
                     <motion.div
@@ -151,11 +162,11 @@ export default function DynamicBackground() {
                 {/* Storm Flash */}
                 {isStorm && (
                     <motion.div
-                        animate={{ 
-                            opacity: [0, 0, 0.2, 0, 0.5, 0, 0, 0] 
+                        animate={{
+                            opacity: [0, 0, 0.2, 0, 0.5, 0, 0, 0]
                         }}
-                        transition={{ 
-                            duration: 4, 
+                        transition={{
+                            duration: 4,
                             repeat: Infinity,
                             times: [0, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1]
                         }}
@@ -168,7 +179,7 @@ export default function DynamicBackground() {
                 ref={canvasRef}
                 className="absolute inset-0 w-full h-full"
             />
-            
+
             {/* Darken background for rain/storm */}
             {current?.weatherCode && current.weatherCode >= 51 && (
                 <div className="absolute inset-0 bg-slate-900/5 backdrop-blur-[2px]" />
