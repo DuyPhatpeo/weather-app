@@ -37,13 +37,19 @@ export interface DailyForecast {
   sunset?: string;
 }
 
+export interface PinnedCity {
+  name: string;
+  lat: number;
+  lon: number;
+}
+
 export interface WeatherState {
   lat: number;
   lon: number;
   city: string;
   unit: "celsius" | "fahrenheit";
   searchHistory: string[];
-  pinnedCities: string[];
+  pinnedCities: PinnedCity[];
   current: CurrentWeather | null;
   hourly: HourlyForecast[] | null;
   daily: DailyForecast[] | null;
@@ -54,7 +60,7 @@ export interface WeatherState {
 
   setCoords: (lat: number, lon: number, city: string) => void;
   setUnit: (unit: "celsius" | "fahrenheit") => void;
-  togglePinCity: (cityName: string) => void;
+  togglePinCity: (city: PinnedCity) => void;
   addToHistory: (city: string) => void;
   setForecastDays: (days: number) => void;
   setSelectedDate: (date: string | null) => void;

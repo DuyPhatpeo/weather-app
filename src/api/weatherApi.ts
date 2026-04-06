@@ -61,3 +61,19 @@ export const fetchSuggestions = async (query: string) => {
   const { data } = await axios.get(url);
   return data.results || [];
 };
+
+export const fetchBulkWeatherData = async (cities: { lat: number; lon: number }[]) => {
+  if (cities.length === 0) return [];
+  const lats = cities.map((c) => c.lat).join(",");
+  const lons = cities.map((c) => c.lon).join(",");
+
+  const { data } = await weatherApi.get("/forecast", {
+    params: {
+      latitude: lats,
+      longitude: lons,
+      current_weather: true,
+    },
+  });
+
+  return Array.isArray(data) ? data : [data];
+};

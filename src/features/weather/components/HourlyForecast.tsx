@@ -66,11 +66,11 @@ export default function HourlyForecast() {
             <Clock size={20} />
           </div>
           <h3 className="text-3xl font-black text-flat-fg tracking-tighter uppercase">
-            Hourly <span className="text-slate-400">Insight</span>
+            Dự báo <span className="text-slate-400">theo giờ</span>
           </h3>
         </div>
         {!selectedDate && (
-          <span className="px-3 py-1 bg-flat-border text-[10px] font-black uppercase tracking-widest text-flat-fg rounded-md">Next 24 Hours</span>
+          <span className="px-3 py-1 bg-flat-border text-[10px] font-black uppercase tracking-widest text-flat-fg rounded-md">24 giờ tới</span>
         )}
       </div>
 

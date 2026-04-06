@@ -46,7 +46,7 @@ export default function CurrentWeather() {
                 <span className={`w-3 h-3 rounded-full animate-pulse ${tempColors.bg.replace('bg-', 'bg-')}`} style={{ backgroundColor: 'currentColor' }} />
               </h2>
               <p className="font-bold text-slate-400 uppercase tracking-widest text-xs">
-                Elite Station &bull; {new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                Trạm Khí tượng &bull; {new Date().toLocaleTimeString('vi-VN', { hour: 'numeric', minute: '2-digit' })}
               </p>
             </div>
           </div>
@@ -57,7 +57,7 @@ export default function CurrentWeather() {
                 {convertTemp(current.temperature)}°
               </div>
               <div className="absolute -bottom-2 left-2 flex items-center gap-2">
-                <span className="text-xs font-black uppercase tracking-widest text-slate-400">Feels like</span>
+                <span className="text-xs font-black uppercase tracking-widest text-slate-400">Cảm giác như</span>
                 <span className={`text-2xl font-black ${tempColors.text}`}>{convertTemp(current.apparentTemperature ?? current.temperature)}°</span>
               </div>
               <div className="absolute -top-4 -right-12">
@@ -80,7 +80,7 @@ export default function CurrentWeather() {
         {/* Right Side: Details Grid */}
         <div className="lg:w-[450px]">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">Current Metrics</h3>
+            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">Thông số hiện tại</h3>
             <div className="flex items-center border-4 border-flat-border rounded-xl p-1 bg-white">
               <button
                 onClick={() => setUnit("celsius")}
@@ -100,37 +100,37 @@ export default function CurrentWeather() {
           <div className="grid grid-cols-2 gap-4">
             <MetricCard
               icon={<Wind size={22} />}
-              label="Wind Speed"
+              label="Tốc độ gió"
               value={`${current.windSpeed} km/h`}
               color="text-blue-500"
             />
             <MetricCard
               icon={<Droplets size={22} />}
-              label="Humidity"
+              label="Độ ẩm"
               value={`${current.humidity}%`}
               color="text-emerald-500"
             />
             <MetricCard
               icon={<AirIcon size={22} />}
-              label="Air Quality"
+              label="Chất lượng không khí"
               value={`${current.aqi ?? 'N/A'} AQI`}
               color="text-orange-500"
             />
             <MetricCard
               icon={<Sunrise size={22} />}
-              label="Sunrise"
-              value={current.sunrise ? new Date(current.sunrise).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : 'N/A'}
+              label="Bình minh"
+              value={current.sunrise ? new Date(current.sunrise).toLocaleTimeString('vi-VN', { hour: 'numeric', minute: '2-digit' }) : 'N/A'}
               color="text-amber-500"
             />
             <MetricCard
               icon={<Sunset size={22} />}
-              label="Sunset"
-              value={current.sunset ? new Date(current.sunset).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : 'N/A'}
+              label="Hoàng hôn"
+              value={current.sunset ? new Date(current.sunset).toLocaleTimeString('vi-VN', { hour: 'numeric', minute: '2-digit' }) : 'N/A'}
               color="text-rose-500"
             />
             <MetricCard
               icon={<Navigation size={22} />}
-              label="Pressure"
+              label="Áp suất"
               value={`${current.pressure ?? 'N/A'} hPa`}
               color="text-purple-500"
             />

@@ -1,4 +1,4 @@
-# 🌤️ Weather Forecast Application
+# 🌤️ Dự báo thời tiết - Weather Forecast
 
 Ứng dụng dự báo thời tiết hiện đại với giao diện đẹp mắt, hỗ trợ tìm kiếm địa điểm và hiển thị dự báo chi tiết theo giờ và theo ngày.
 
@@ -20,11 +20,11 @@
 
 ## 🚀 Demo
 
-🔗 **Live Demo**: [weather-app](https://weather-app-duyphatpeo.vercel.app)
+🔗 **Live Demo**: [SkyCast Elite](https://weather-app-duyphatpeo.vercel.app)
 
 ## 📁 Cấu trúc dự án
 
-```
+```text
 src/
 ├── api/
 │   └── weatherApi.ts          # API calls (Open-Meteo, Nominatim)
@@ -90,15 +90,15 @@ pnpm dev
 
 1. **Mở trình duyệt**
 
-```
+```text
 http://localhost:3000
 ```
 
-# ️ Premium Weather Elite
+## 💎 Dự báo thời tiết Premium
 
 A high-performance, visually stunning weather application built with **React**, **TypeScript**, and **Tailwind CSS**. Designed with a "Premium Flat Elite" aesthetic, focusing on bold typography, vibrant color blocking, and professional-grade user experience.
 
-![Weather App Screenshot](public/sreen.png)
+![SkyCast Elite Screenshot](public/sreen.png)
 
 ## ✨ Highlight Features
 

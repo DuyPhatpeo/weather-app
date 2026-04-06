@@ -12,19 +12,19 @@ export default function WeatherAdvice() {
     const uv = current.uvIndex ?? 0;
 
     const getAdvice = () => {
-        let health = { text: "Air quality is good. Great for outdoor exercise!", icon: ShieldCheck, color: "text-emerald-500", bg: "bg-emerald-50" };
-        let activity = { text: "Conditions are excellent for any outdoor plans.", icon: Sun, color: "text-amber-500", bg: "bg-amber-50" };
+        let health = { text: "Chất lượng không khí tốt. Rất thích hợp cho các hoạt động ngoài trời!", icon: ShieldCheck, color: "text-emerald-500", bg: "bg-emerald-50" };
+        let activity = { text: "Điều kiện tuyệt vời cho mọi kế hoạch ngoài trời.", icon: Sun, color: "text-amber-500", bg: "bg-amber-50" };
 
         if (aqi > 100) {
-            health = { text: "Poor air quality. Sensitive groups should wear masks.", icon: AlertTriangle, color: "text-orange-500", bg: "bg-orange-50" };
+            health = { text: "Chất lượng không khí kém. Nhóm người nhạy cảm nên đeo khẩu trang.", icon: AlertTriangle, color: "text-orange-500", bg: "bg-orange-50" };
         } else if (aqi > 150) {
-            health = { text: "Harmful pollution levels. Stay indoors if possible.", icon: AlertTriangle, color: "text-red-500", bg: "bg-red-50" };
+            health = { text: "Mức độ ô nhiễm có hại. Nên ở trong nhà nếu có thể.", icon: AlertTriangle, color: "text-red-500", bg: "bg-red-50" };
         }
 
         if (isRain) {
-            activity = { text: "Rain expected. Movie day or indoor activities recommended.", icon: CloudRain, color: "text-blue-500", bg: "bg-blue-50" };
+            activity = { text: "Dự báo có mưa. Bạn nên ưu tiên các hoạt động trong nhà.", icon: CloudRain, color: "text-blue-500", bg: "bg-blue-50" };
         } else if (uv > 7) {
-            activity = { text: "Very high UV. Wear sunblock and avoid peak sun hours.", icon: Wind, color: "text-orange-500", bg: "bg-orange-50" };
+            activity = { text: "Chỉ số UV rất cao. Hãy bôi kem chống nắng và tránh ra ngoài lúc nắng gắt.", icon: Wind, color: "text-orange-500", bg: "bg-orange-50" };
         }
 
         return { health, activity };
@@ -35,14 +35,14 @@ export default function WeatherAdvice() {
     return (
         <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
             <AdviceCard
-                title="Health Status"
+                title="Sức khỏe"
                 advice={health.text}
                 Icon={health.icon}
                 color={health.color}
                 bg={health.bg}
             />
             <AdviceCard
-                title="Activity Plan"
+                title="Kế hoạch hoạt động"
                 advice={activity.text}
                 Icon={activity.icon}
                 color={activity.color}

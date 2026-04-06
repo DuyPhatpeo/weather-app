@@ -31,12 +31,13 @@ export const useWeatherStore = create<WeatherState>()(
 
       setUnit: (unit) => set({ unit }),
 
-      togglePinCity: (cityName) => {
+      togglePinCity: (city) => {
         const pinned = get().pinnedCities;
-        if (pinned.includes(cityName)) {
-          set({ pinnedCities: pinned.filter((c) => c !== cityName) });
+        const exists = pinned.find((c) => c.name === city.name);
+        if (exists) {
+          set({ pinnedCities: pinned.filter((c) => c.name !== city.name) });
         } else {
-          set({ pinnedCities: [...pinned, cityName] });
+          set({ pinnedCities: [...pinned, city] });
         }
       },
 

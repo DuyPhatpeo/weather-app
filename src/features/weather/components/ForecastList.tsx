@@ -55,7 +55,7 @@ export default function ForecastList() {
           </div>
           <div>
             <h3 className="text-3xl font-black text-flat-fg tracking-tighter uppercase">
-              Extended <span className="text-slate-400">Forecast</span>
+              Dự báo <span className="text-slate-400">dài hạn</span>
             </h3>
           </div>
         </div>
@@ -90,7 +90,7 @@ export default function ForecastList() {
               const active = selectedDate === d.date;
               const dateObj = new Date(d.date);
 
-              const dayName = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][dateObj.getDay()];
+              const dayName = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"][dateObj.getDay()];
               const dateLabel = dateObj.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
 
               return (
@@ -99,7 +99,16 @@ export default function ForecastList() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: idx * 0.05 }}
-                  onClick={() => setSelectedDate(active ? null : d.date)}
+                  onClick={(e) => {
+                    setSelectedDate(active ? null : d.date);
+                    if (!active) {
+                      e.currentTarget.scrollIntoView({
+                        behavior: "smooth",
+                        inline: "center",
+                        block: "nearest"
+                      });
+                    }
+                  }}
                   className={`
                     w-44 p-8 rounded-2xl cursor-pointer flex flex-col items-center gap-6 border-4 transition-all duration-300
                     ${active
@@ -110,7 +119,7 @@ export default function ForecastList() {
                 >
                   <div className="text-center">
                     <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${active ? 'text-flat-primary' : 'text-slate-400'}`}>
-                      {idx === 0 ? "Yesterday" : idx === 1 ? "Today" : dayName}
+                      {idx === 0 ? "Hôm qua" : idx === 1 ? "Hôm nay" : dayName}
                     </span>
                     <div className="text-sm font-black text-flat-fg">{dateLabel}</div>
                   </div>
@@ -132,7 +141,7 @@ export default function ForecastList() {
                       <div className="flex items-center justify-between px-3 py-1.5 rounded-lg border-2 border-amber-100 bg-amber-50/50">
                         <Sunrise size={14} className="text-amber-500" />
                         <span className="text-[10px] font-black tracking-widest text-amber-600">
-                          {new Date(d.sunrise).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                          {new Date(d.sunrise).toLocaleTimeString('vi-VN', { hour: 'numeric', minute: '2-digit' })}
                         </span>
                       </div>
                     )}
@@ -140,7 +149,7 @@ export default function ForecastList() {
                       <div className="flex items-center justify-between px-3 py-1.5 rounded-lg border-2 border-rose-100 bg-rose-50/50">
                         <Sunset size={14} className="text-rose-500" />
                         <span className="text-[10px] font-black tracking-widest text-rose-600">
-                          {new Date(d.sunset).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                          {new Date(d.sunset).toLocaleTimeString('vi-VN', { hour: 'numeric', minute: '2-digit' })}
                         </span>
                       </div>
                     )}

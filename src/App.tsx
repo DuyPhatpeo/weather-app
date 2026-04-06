@@ -5,6 +5,7 @@ import HourlyForecast from "./features/weather/components/HourlyForecast";
 import ForecastList from "./features/weather/components/ForecastList";
 import WeatherAdvice from "./features/weather/components/WeatherAdvice";
 import EnvironmentalDashboard from "./features/weather/components/EnvironmentalDashboard";
+import WeatherChart from "./features/weather/components/WeatherChart";
 import DynamicBackground from "./features/weather/components/DynamicBackground";
 import { useWeatherStore } from "./store/weatherStore";
 import { motion, AnimatePresence } from "framer-motion";
@@ -39,15 +40,15 @@ export default function App() {
               <div className="p-2 bg-flat-primary rounded-lg text-white">
                 <Sparkles size={24} />
               </div>
-              <span className="text-sm font-black uppercase tracking-[0.2em] text-flat-primary">Weather App Elite</span>
+              <span className="text-sm font-black uppercase tracking-[0.2em] text-flat-primary">Dự báo thời tiết</span>
             </div>
             <motion.h1
               initial={{ x: -50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               className="text-6xl md:text-[8rem] font-black text-flat-fg tracking-tighter uppercase leading-[0.85]"
             >
-              The <br />
-              <span className="text-flat-primary">Weather</span>
+              Dự báo <br />
+              <span className="text-flat-primary">thời tiết</span>
             </motion.h1>
           </div>
           <div className="md:text-right max-w-sm">
@@ -57,7 +58,7 @@ export default function App() {
               transition={{ delay: 0.2 }}
               className="text-xl font-bold text-slate-500 uppercase tracking-tight mb-4"
             >
-              Precision forecasting powered by <span className="text-flat-fg font-black">Dino Péo</span> technology.
+              Dự báo chính xác được cung cấp bởi công nghệ <span className="text-flat-fg font-black">Dino Péo</span>.
             </motion.p>
             <div className="h-2 w-full bg-flat-border rounded-full overflow-hidden">
               <motion.div
@@ -99,8 +100,8 @@ export default function App() {
               <div className="inline-flex items-center justify-center w-32 h-32 bg-flat-muted rounded-full mb-10 transition-transform group-hover:scale-110 duration-500">
                 <CloudRain className="text-flat-primary" size={64} />
               </div>
-              <h2 className="text-5xl font-black tracking-tight mb-6 uppercase text-flat-fg">Ready for search</h2>
-              <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-sm">Enter a city name above to unlock elite forecast</p>
+              <h2 className="text-5xl font-black tracking-tight mb-6 uppercase text-flat-fg">Sẵn sàng tìm kiếm</h2>
+              <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-sm">Hãy nhập tên thành phố ở trên để xem dự báo thời tiết</p>
             </motion.div>
           ) : (
             <motion.div
@@ -110,6 +111,7 @@ export default function App() {
               className="space-y-12"
             >
               <CurrentWeather />
+              <WeatherChart />
               <EnvironmentalDashboard />
               <WeatherAdvice />
               <ForecastList />
@@ -122,11 +124,11 @@ export default function App() {
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-flat-fg text-white flex items-center justify-center font-black text-2xl rounded-lg group-hover:bg-flat-primary transition-colors duration-500">D</div>
             <p className="text-lg font-black uppercase tracking-widest text-flat-fg">
-              Weather App Elite &bull; 2026
+              Dự báo thời tiết &bull; 2026
             </p>
           </div>
           <div className="text-center md:text-right">
-            <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Designed with passion by</p>
+            <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Được thiết kế đầy tâm huyết bởi</p>
             <span className="text-2xl font-black text-flat-primary tracking-tighter">DINO PÉO STUDIO</span>
           </div>
         </footer>

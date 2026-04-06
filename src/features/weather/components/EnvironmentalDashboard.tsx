@@ -23,7 +23,7 @@ export default function EnvironmentalDashboard() {
                     <Activity size={24} />
                 </div>
                 <h3 className="text-4xl font-black text-flat-fg tracking-tighter uppercase">
-                    Elite <span className="text-flat-primary">Analytics</span>
+                    Phân tích <span className="text-flat-primary">chuyên sâu</span>
                 </h3>
             </div>
 
@@ -64,15 +64,15 @@ export default function EnvironmentalDashboard() {
                             <span className={`text-7xl font-black tracking-tighter ${aqiColorClass}`}>
                                 {current.aqi ?? 'N/A'}
                             </span>
-                            <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">AQI Index</span>
+                            <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Chỉ số AQI</span>
                         </div>
                     </div>
 
                     <div className="flex-1 grid grid-cols-2 gap-6 w-full">
                         <PollutantCard label="PM2.5" value={current.pm2_5} unit="µg/m³" color="text-orange-500" />
                         <PollutantCard label="PM10" value={current.pm10} unit="µg/m³" color="text-amber-500" />
-                        <PollutantCard label="Ozone" value={current.ozone} unit="µg/m³" color="text-purple-500" />
-                        <PollutantCard label="Visibility" value={current.visibility ? (current.visibility / 1000).toFixed(1) : 'N/A'} unit="km" color="text-blue-500" />
+                        <PollutantCard label="Ô-zôn" value={current.ozone} unit="µg/m³" color="text-purple-500" />
+                        <PollutantCard label="Tầm nhìn" value={current.visibility ? (current.visibility / 1000).toFixed(1) : 'N/A'} unit="km" color="text-blue-500" />
                     </div>
                 </motion.div>
 
@@ -84,26 +84,26 @@ export default function EnvironmentalDashboard() {
                 >
                     <div>
                         <h4 className="text-sm font-black uppercase tracking-[0.2em] text-flat-primary mb-8 flex items-center gap-2">
-                            <Moon size={16} fill="currentColor" /> Celestial Cycle
+                            <Moon size={16} fill="currentColor" /> Chu kỳ thiên văn
                         </h4>
 
                         <div className="space-y-8">
                             <AstroRow
                                 icon={<Sunrise size={20} />}
-                                label="Sunrise"
-                                value={current.sunrise ? new Date(current.sunrise).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : 'N/A'}
+                                label="Bình minh"
+                                value={current.sunrise ? new Date(current.sunrise).toLocaleTimeString('vi-VN', { hour: 'numeric', minute: '2-digit' }) : 'N/A'}
                                 color="text-amber-500"
                             />
                             <AstroRow
                                 icon={<Sunset size={20} />}
-                                label="Sunset"
-                                value={current.sunset ? new Date(current.sunset).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : 'N/A'}
+                                label="Hoàng hôn"
+                                value={current.sunset ? new Date(current.sunset).toLocaleTimeString('vi-VN', { hour: 'numeric', minute: '2-digit' }) : 'N/A'}
                                 color="text-rose-500"
                             />
                             <div className="h-0.5 w-full bg-flat-primary/10 rounded-full" />
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">UV Intensity</div>
+                                    <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Cường độ UV</div>
                                     <div className="text-2xl font-black text-flat-fg">{current.uvIndex?.toFixed(1) ?? 'N/A'}</div>
                                 </div>
                                 <div className="p-3 bg-white border-2 border-flat-border rounded-xl">
@@ -118,8 +118,8 @@ export default function EnvironmentalDashboard() {
                     </div>
 
                     <div className="mt-8 p-4 bg-white border-2 border-flat-border rounded-xl text-center">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-2">Observation Node</span>
-                        <span className="text-xs font-black text-flat-primary">Station E-024 • Active</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-2">Trạm quan sát</span>
+                        <span className="text-xs font-black text-flat-primary">Trạm E-024 • Đang hoạt động</span>
                     </div>
                 </motion.div>
             </div>
