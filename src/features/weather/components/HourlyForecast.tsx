@@ -88,7 +88,7 @@ export default function HourlyForecast() {
           onMouseUp={handleMouseUp}
           onMouseMove={handleMouseMove}
         >
-          <div className="flex gap-6 min-w-max">
+          <div className="flex gap-10 min-w-max">
             {filteredHourly.map((h, idx) => {
               const info = getWeatherInfo(h.weatherCode);
               const hourLabel = formatHour(h.time, selectedDate);

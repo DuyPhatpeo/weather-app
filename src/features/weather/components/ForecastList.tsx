@@ -84,7 +84,7 @@ export default function ForecastList() {
           className="overflow-x-auto scrollbar-hide py-10 px-4 -mx-4"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          <div className="flex gap-6 min-w-max">
+          <div className="flex gap-10 min-w-max">
             {daily.map((d, idx) => {
               const info = getWeatherInfo(d.weatherCode);
               const active = selectedDate === d.date;

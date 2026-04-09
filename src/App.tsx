@@ -36,16 +36,10 @@ export default function App() {
       <main className="max-w-6xl mx-auto relative z-10">
         <header className="mb-16 md:mb-24 flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-flat-primary rounded-lg text-white">
-                <Sparkles size={24} />
-              </div>
-              <span className="text-sm font-black uppercase tracking-[0.2em] text-flat-primary">Dự báo thời tiết</span>
-            </div>
             <motion.h1
               initial={{ x: -50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              className="text-6xl md:text-[8rem] font-black text-flat-fg tracking-tighter uppercase leading-[0.85]"
+              className="text-6xl md:text-[8rem] font-black text-flat-fg tracking-tighter uppercase leading-[1.1]"
             >
               Dự báo <br />
               <span className="text-flat-primary">thời tiết</span>
