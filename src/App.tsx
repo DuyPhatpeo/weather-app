@@ -9,7 +9,7 @@ import WeatherChart from "./features/weather/components/WeatherChart";
 import DynamicBackground from "./features/weather/components/DynamicBackground";
 import { useWeatherStore } from "./store/weatherStore";
 import { motion, AnimatePresence } from "framer-motion";
-import { CloudRain, Sparkles } from "lucide-react";
+import { CloudRain } from "lucide-react";
 
 export default function App() {
   const { loadWeather, loading, current } = useWeatherStore();
