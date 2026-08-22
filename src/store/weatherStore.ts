@@ -5,8 +5,8 @@ import type {
   CurrentWeather,
   HourlyForecast,
   DailyForecast,
-} from "../types/weather";
-import { fetchWeatherData } from "../api/weatherApi";
+} from "@/types/weather";
+import { fetchWeatherData } from "@/api/weatherApi";
 
 export const useWeatherStore = create<WeatherState>()(
   persist(
@@ -16,13 +16,14 @@ export const useWeatherStore = create<WeatherState>()(
       lon: 106.6297,
       city: "Ho Chi Minh City",
       unit: "celsius",
+      theme: "dark",
       searchHistory: [],
       pinnedCities: [],
 
       current: null,
       hourly: null,
       daily: null,
-      forecastDays: 10,
+      forecastDays: 16,
       selectedDate: null,
       loading: false,
       error: null,
@@ -30,6 +31,8 @@ export const useWeatherStore = create<WeatherState>()(
       setCoords: (lat, lon, city) => set({ lat, lon, city, selectedDate: null }),
 
       setUnit: (unit) => set({ unit }),
+
+      toggleTheme: () => set({ theme: get().theme === "dark" ? "light" : "dark" }),
 
       togglePinCity: (city) => {
         const pinned = get().pinnedCities;
@@ -85,6 +88,7 @@ export const useWeatherStore = create<WeatherState>()(
             temperature: data.current_weather?.temperature ?? 0,
             apparentTemperature: data.hourly?.apparent_temperature?.[finalHourIdx],
             windSpeed: data.current_weather?.windspeed ?? 0,
+            windDirection: data.current_weather?.winddirection,
             weatherCode: data.current_weather?.weathercode ?? 0,
             humidity: data.hourly?.relativehumidity_2m?.[finalHourIdx] ?? 0,
             time: data.current_weather?.time ?? new Date().toISOString(),
@@ -144,6 +148,7 @@ export const useWeatherStore = create<WeatherState>()(
         lon: state.lon,
         city: state.city,
         unit: state.unit,
+        theme: state.theme,
         searchHistory: state.searchHistory,
         pinnedCities: state.pinnedCities,
       }),

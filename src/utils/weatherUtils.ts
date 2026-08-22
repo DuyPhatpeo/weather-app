@@ -131,6 +131,21 @@ export const formatDate = (dateStr: string) => {
   };
 };
 
+const COMPASS_LABELS = ["Bắc", "Đông Bắc", "Đông", "Đông Nam", "Nam", "Tây Nam", "Tây", "Tây Bắc"];
+
+export const degToCompass = (deg?: number): string => {
+  if (deg == null) return "--";
+  return COMPASS_LABELS[Math.round(deg / 45) % 8];
+};
+
+export const greeting = (hour: number = new Date().getHours()): string => {
+  if (hour < 5) return "Chào buổi tối";
+  if (hour < 11) return "Chào buổi sáng";
+  if (hour < 13) return "Chào buổi trưa";
+  if (hour < 18) return "Chào buổi chiều";
+  return "Chào buổi tối";
+};
+
 export const getTemperatureColor = (temp: number): { text: string; bg: string; border: string; glow: string } => {
   if (temp <= 0) return { text: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200", glow: "shadow-blue-500/20" };
   if (temp <= 15) return { text: "text-sky-500", bg: "bg-sky-50", border: "border-sky-200", glow: "shadow-sky-500/20" };

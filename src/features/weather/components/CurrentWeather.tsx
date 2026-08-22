@@ -1,154 +1,182 @@
-import { Wind, Droplets, Sun, Navigation, Sunrise, Sunset, Wind as AirIcon } from "lucide-react";
-import { useWeatherStore } from "../../../store/weatherStore";
-import { getWeatherInfo, getTemperatureColor } from "../../../utils/weatherUtils";
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useWeatherStore } from "@/store/weatherStore";
+import { getWeatherInfo, degToCompass, greeting } from "@/utils/weatherUtils";
+import { MapPin, Navigation } from "lucide-react";
+import AlertBanner from "@/features/weather/components/AlertBanner";
+import DynamicBackground from "@/features/weather/components/DynamicBackground";
 
-const getFlatColorByCode = (code: number): string => {
-  if ([0, 1].includes(code)) return "text-flat-primary"; // Clear/Sunny
-  if ([2, 3, 45, 48].includes(code)) return "text-slate-500"; // Cloudy
-  if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return "text-flat-secondary"; // Rain
-  return "text-flat-accent"; // Warning/Storm
-};
+export default function CurrentWeather({ onOpenMap }: { onOpenMap?: () => void }) {
+  const { current, city, unit, setUnit } = useWeatherStore();
+  const today = useWeatherStore((s) => s.daily?.find((d) => d.date === s.selectedDate) ?? s.daily?.[1] ?? s.daily?.[0]);
 
-export default function CurrentWeather() {
-  const { current, city, loading, unit, setUnit } = useWeatherStore();
-
-  if (loading || !current) return null;
+  if (!current) return null;
 
   const weatherInfo = getWeatherInfo(current.weatherCode);
-  const textColorClass = getFlatColorByCode(current.weatherCode);
-  const tempColors = getTemperatureColor(current.temperature);
 
   const convertTemp = (temp: number) => {
     if (unit === "fahrenheit") return Math.round((temp * 9) / 5 + 32);
     return Math.round(temp);
   };
 
+  const dateLabel = new Date().toLocaleDateString("vi-VN", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+  });
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={`flat-card-base flat-card-hover border-flat-border relative overflow-hidden ${tempColors.bg}/5`}
-    >
-      {/* Dynamic Accent Bar */}
-      <div className={`absolute top-0 left-0 w-full h-3 ${textColorClass.replace('text-', 'bg-')}`} />
+    <div className="flex flex-col gap-4">
+      <AlertBanner />
 
-      <div className="flex flex-col lg:flex-row justify-between gap-12 pt-4">
-        {/* Left Side: Main Info */}
-        <div className="flex-1">
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-14 h-14 bg-flat-muted flex items-center justify-center rounded-xl border-2 border-flat-border">
-              <Navigation className="text-flat-primary rotate-45" size={28} />
-            </div>
-            <div>
-              <h2 className="text-4xl font-black text-flat-fg flex items-center gap-2">
-                {city}
-                <span className={`w-3 h-3 rounded-full animate-pulse ${tempColors.bg.replace('bg-', 'bg-')}`} style={{ backgroundColor: 'currentColor' }} />
-              </h2>
-              <p className="font-bold text-slate-400 uppercase tracking-widest text-xs">
-                Trạm Khí tượng &bull; {new Date().toLocaleTimeString('vi-VN', { hour: 'numeric', minute: '2-digit' })}
-              </p>
-            </div>
-          </div>
+      <div className="relative overflow-hidden rounded-3xl min-h-[420px] p-6 md:p-10 flex flex-col shadow-[0_30px_70px_-24px_rgba(0,0,0,0.55)]">
+        <DynamicBackground forceDark />
+        {/* Glossy highlight sheen */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "radial-gradient(circle at 12% -10%, rgba(255,255,255,0.22), transparent 45%)" }}
+        />
 
-          <div className="flex items-center gap-10">
-            <div className="relative">
-              <div className={`text-[10rem] md:text-[14rem] font-black tracking-tighter ${tempColors.text} leading-none drop-shadow-sm`}>
-                {convertTemp(current.temperature)}°
-              </div>
-              <div className="absolute -bottom-2 left-2 flex items-center gap-2">
-                <span className="text-xs font-black uppercase tracking-widest text-slate-400">Cảm giác như</span>
-                <span className={`text-2xl font-black ${tempColors.text}`}>{convertTemp(current.apparentTemperature ?? current.temperature)}°</span>
-              </div>
-              <div className="absolute -top-4 -right-12">
-                <span className="text-6xl animate-float inline-block">{weatherInfo.icon}</span>
-              </div>
-            </div>
-
-            <div className="hidden md:block">
-              <div className={`text-3xl font-black uppercase tracking-tighter mb-1 ${textColorClass}`}>
-                {weatherInfo.desc}
-              </div>
-              <div className="px-4 py-2 bg-flat-muted border-2 border-flat-border rounded-lg inline-flex items-center gap-2">
-                <Sun size={16} className="text-flat-accent" />
-                <span className="text-sm font-black uppercase tracking-widest text-flat-fg">UV {current.uvIndex ?? 'N/A'}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Side: Details Grid */}
-        <div className="lg:w-[450px]">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">Thông số hiện tại</h3>
-            <div className="flex items-center border-4 border-flat-border rounded-xl p-1 bg-white">
+        <div className="relative z-10 flex flex-col h-full text-white">
+          {/* Top row */}
+          <div className="flex flex-wrap items-center gap-3 mb-8">
+            <span className="relative flex w-2 h-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-60" />
+              <span className="relative inline-flex w-2 h-2 rounded-full bg-white" />
+            </span>
+            <h1 className="font-semibold text-sm md:text-base">
+              {city} <span className="text-white/60 font-normal">({dateLabel})</span>
+            </h1>
+            {onOpenMap && (
               <button
-                onClick={() => setUnit("celsius")}
-                className={`px-4 py-2 rounded-lg font-black text-xs transition-all ${unit === "celsius" ? "bg-flat-primary text-white" : "text-flat-fg hover:bg-flat-muted"}`}
+                onClick={onOpenMap}
+                className="flex items-center gap-1.5 text-xs font-medium bg-white/15 backdrop-blur-md border border-white/20 px-3 py-1.5 rounded-full hover:bg-white/25 hover:-translate-y-0.5 transition-all ml-auto"
               >
-                CELSIUS
+                <MapPin size={12} />
+                <span>Bản đồ</span>
               </button>
-              <button
-                onClick={() => setUnit("fahrenheit")}
-                className={`px-4 py-2 rounded-lg font-black text-xs transition-all ${unit === "fahrenheit" ? "bg-flat-primary text-white" : "text-flat-fg hover:bg-flat-muted"}`}
-              >
-                FAHRENHEIT
-              </button>
-            </div>
+            )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <MetricCard
-              icon={<Wind size={22} />}
-              label="Tốc độ gió"
-              value={`${current.windSpeed} km/h`}
-              color="text-blue-500"
-            />
-            <MetricCard
-              icon={<Droplets size={22} />}
-              label="Độ ẩm"
-              value={`${current.humidity}%`}
-              color="text-emerald-500"
-            />
-            <MetricCard
-              icon={<AirIcon size={22} />}
-              label="Chất lượng không khí"
-              value={`${current.aqi ?? 'N/A'} AQI`}
-              color="text-orange-500"
-            />
-            <MetricCard
-              icon={<Sunrise size={22} />}
-              label="Bình minh"
-              value={current.sunrise ? new Date(current.sunrise).toLocaleTimeString('vi-VN', { hour: 'numeric', minute: '2-digit' }) : 'N/A'}
-              color="text-amber-500"
-            />
-            <MetricCard
-              icon={<Sunset size={22} />}
-              label="Hoàng hôn"
-              value={current.sunset ? new Date(current.sunset).toLocaleTimeString('vi-VN', { hour: 'numeric', minute: '2-digit' }) : 'N/A'}
-              color="text-rose-500"
-            />
-            <MetricCard
-              icon={<Navigation size={22} />}
-              label="Áp suất"
-              value={`${current.pressure ?? 'N/A'} hPa`}
-              color="text-purple-500"
-            />
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            {/* Left: greeting + wind */}
+            <motion.div initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col gap-6">
+              <div>
+                <h2 className="text-3xl md:text-5xl font-bold leading-tight">{greeting()}</h2>
+                <p className="mt-2 text-sm md:text-base text-white/75 max-w-xs">
+                  Hôm nay trời {weatherInfo.desc.toLowerCase()}, {tagline(current.weatherCode, current.uvIndex)}
+                </p>
+              </div>
+
+              <WindChip speed={current.windSpeed} direction={current.windDirection} />
+            </motion.div>
+
+            {/* Right: orb + temp */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 }}
+              className="flex flex-col items-center md:items-end gap-2"
+            >
+              <WeatherOrb icon={weatherInfo.icon} />
+
+              <div className="flex items-start gap-3 mt-2">
+                <div className="text-6xl md:text-7xl font-extralight leading-none tracking-tight">
+                  {convertTemp(current.temperature)}°
+                </div>
+                <button
+                  onClick={() => setUnit(unit === "celsius" ? "fahrenheit" : "celsius")}
+                  className="mt-1 text-xs font-semibold text-white/70 hover:text-white transition-colors"
+                >
+                  °{unit === "celsius" ? "C" : "F"}
+                </button>
+              </div>
+
+              {today && (
+                <div className="flex items-center gap-2 text-sm text-white/80">
+                  <span>H {convertTemp(today.tempMax)}°</span>
+                  <span className="text-white/40">/</span>
+                  <span>L {convertTemp(today.tempMin)}°</span>
+                </div>
+              )}
+            </motion.div>
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
-function MetricCard({ icon, label, value, color }: { icon: any; label: string; value: string; color: string }) {
+function tagline(code: number, uv?: number): string {
+  if (code >= 51 && code <= 82) return "nhớ mang theo ô nhé.";
+  if (uv != null && uv > 7) return "đừng quên kem chống nắng.";
+  if ([0, 1].includes(code)) return "thích hợp để ra ngoài dạo bộ.";
+  return "một ngày dễ chịu để tận hưởng.";
+}
+
+function WindChip({ speed, direction }: { speed: number; direction?: number }) {
   return (
-    <div className="bg-flat-bg border-2 border-flat-border rounded-xl p-4 transition-all hover:border-flat-primary group">
-      <div className={`w-10 h-10 bg-white border-2 border-flat-border flex items-center justify-center rounded-lg mb-4 ${color} transition-transform group-hover:scale-110`}>
-        {icon}
+    <div className="inline-flex items-center gap-3 bg-white/12 backdrop-blur-md border border-white/20 rounded-2xl px-4 py-3 w-fit">
+      <div className="relative w-9 h-9 rounded-full border border-white/30 flex items-center justify-center shrink-0">
+        <Navigation
+          size={16}
+          className="transition-transform duration-500"
+          style={{ transform: `rotate(${direction ?? 0}deg)` }}
+        />
       </div>
-      <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{label}</div>
-      <div className="text-xl font-black text-flat-fg">{value}</div>
+      <div>
+        <div className="text-sm font-semibold leading-none">{speed.toFixed(0)} km/h</div>
+        <div className="text-[11px] text-white/70 mt-1">{degToCompass(direction)}</div>
+      </div>
     </div>
+  );
+}
+
+function WeatherOrb({ icon }: { icon: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const mx = useMotionValue(0.5);
+  const my = useMotionValue(0.5);
+  const rotateX = useSpring(useTransform(my, [0, 1], [8, -8]), { stiffness: 150, damping: 15 });
+  const rotateY = useSpring(useTransform(mx, [0, 1], [-8, 8]), { stiffness: 150, damping: 15 });
+
+  const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = ref.current?.getBoundingClientRect();
+    if (!rect) return;
+    mx.set((e.clientX - rect.left) / rect.width);
+    my.set((e.clientY - rect.top) / rect.height);
+  };
+  const handleLeave = () => {
+    mx.set(0.5);
+    my.set(0.5);
+  };
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMove}
+      onMouseLeave={handleLeave}
+      style={{ rotateX, rotateY, transformPerspective: 600 }}
+      className="relative w-40 h-40 md:w-48 md:h-48 select-none"
+    >
+      <div
+        className="absolute inset-0 rounded-full"
+        style={{
+          background: "radial-gradient(circle at 30% 25%, #ffd9a8, #ff8a3d 42%, #e8672a 72%, #9c3d10 100%)",
+          boxShadow:
+            "0 24px 60px -12px rgba(255,138,61,0.55), inset -14px -14px 30px rgba(0,0,0,0.3), inset 10px 10px 24px rgba(255,255,255,0.4)",
+        }}
+      />
+      <div
+        className="absolute inset-0 rounded-full"
+        style={{ background: "radial-gradient(circle at 28% 20%, rgba(255,255,255,0.6), transparent 38%)" }}
+      />
+      <motion.span
+        animate={{ y: [0, -6, 0] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute inset-0 flex items-center justify-center text-6xl md:text-7xl drop-shadow-[0_10px_20px_rgba(0,0,0,0.35)]"
+      >
+        {icon}
+      </motion.span>
+    </motion.div>
   );
 }

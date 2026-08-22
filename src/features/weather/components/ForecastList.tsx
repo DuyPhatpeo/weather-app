@@ -1,171 +1,102 @@
-import { useWeatherStore } from "../../../store/weatherStore";
-import { getWeatherInfo, getTemperatureColor } from "../../../utils/weatherUtils";
-import { ChevronLeft, ChevronRight, Calendar, Sunrise, Sunset } from "lucide-react";
-import { useRef, useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useWeatherStore } from "@/store/weatherStore";
+
+const DAY_NAMES = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+const W = 700;
+const H = 90;
 
 export default function ForecastList() {
-  const { daily, selectedDate, setSelectedDate, unit } = useWeatherStore();
-
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
-
-  const checkScroll = () => {
-    if (!scrollRef.current) return;
-    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-    setCanScrollLeft(scrollLeft > 0);
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-  };
-
-  useEffect(() => {
-    checkScroll();
-    const el = scrollRef.current;
-    if (!el) return;
-    el.addEventListener("scroll", checkScroll);
-    window.addEventListener("resize", checkScroll);
-    return () => {
-      el.removeEventListener("scroll", checkScroll);
-      window.removeEventListener("resize", checkScroll);
-    };
-  }, [daily]);
+  const { daily, selectedDate, setSelectedDate, unit, theme } = useWeatherStore();
 
   if (!daily?.length) return null;
 
-  const scroll = (dir: "left" | "right") => {
-    if (!scrollRef.current) return;
-    scrollRef.current.scrollBy({
-      left: dir === "left" ? -400 : 400,
-      behavior: "smooth",
-    });
-    setTimeout(checkScroll, 300);
-  };
+  const lineColor = theme === "dark" ? "rgba(255,255,255,0.35)" : "rgba(15,23,42,0.25)";
+  const dotColor = theme === "dark" ? "rgba(255,255,255,0.4)" : "rgba(15,23,42,0.3)";
+  const guideColor = theme === "dark" ? "rgba(255,255,255,0.2)" : "rgba(15,23,42,0.15)";
 
-  const convertTemp = (temp: number) => {
-    if (unit === "fahrenheit") return Math.round((temp * 9) / 5 + 32);
-    return Math.round(temp);
-  };
+  const days = daily.slice(1, 7);
+  const temps = days.map((d) => d.tempMax);
+  const min = Math.min(...temps);
+  const max = Math.max(...temps);
+  const range = max - min || 1;
+  const step = W / (days.length - 1 || 1);
+
+  const points = temps.map((t, i) => [i * step, H - ((t - min) / range) * (H - 20) - 10] as const);
+  const path = buildSmoothPath(points);
+
+  const convertTemp = (t: number) => (unit === "fahrenheit" ? Math.round((t * 9) / 5 + 32) : Math.round(t));
+
+  const areaPath = `${path} L${points[points.length - 1][0]},${H} L${points[0][0]},${H} Z`;
 
   return (
-    <div className="mt-16 select-none">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 bg-flat-fg text-white flex items-center justify-center rounded-lg border-2 border-flat-border">
-            <Calendar size={20} />
-          </div>
-          <div>
-            <h3 className="text-3xl font-black text-flat-fg tracking-tighter uppercase">
-              Dự báo <span className="text-slate-400">dài hạn</span>
-            </h3>
-          </div>
-        </div>
+    <div className="mt-10">
+      <div className="section-label mb-3">Dự báo 6 ngày tới</div>
 
-        <div className="flex gap-3">
-          <button
-            onClick={() => scroll("left")}
-            disabled={!canScrollLeft}
-            className="flat-button-secondary h-12 w-12 p-0 flex items-center justify-center disabled:opacity-20 transition-all active:scale-90"
-          >
-            <ChevronLeft size={24} />
-          </button>
-          <button
-            onClick={() => scroll("right")}
-            disabled={!canScrollRight}
-            className="flat-button-secondary h-12 w-12 p-0 flex items-center justify-center disabled:opacity-20 transition-all active:scale-90"
-          >
-            <ChevronRight size={24} />
-          </button>
-        </div>
+      <div className="flex justify-between text-xs font-medium text-night-muted mb-2">
+        {days.map((d, i) => {
+          const active = d.date === selectedDate;
+          const dayName = i === 0 ? "Hôm nay" : DAY_NAMES[new Date(d.date).getDay()];
+          return (
+            <button
+              key={d.date}
+              onClick={() => setSelectedDate(active ? null : d.date)}
+              className={`transition-colors ${active ? "text-night-accent" : "hover:text-night-fg"}`}
+            >
+              {dayName}
+            </button>
+          );
+        })}
       </div>
 
       <div className="relative">
-        <div
-          ref={scrollRef}
-          className="overflow-x-auto scrollbar-hide py-10 px-4 -mx-4"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-        >
-          <div className="flex gap-10 min-w-max">
-            {daily.map((d, idx) => {
-              const info = getWeatherInfo(d.weatherCode);
-              const active = selectedDate === d.date;
-              const dateObj = new Date(d.date);
+        <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-[70px]" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="forecastFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#ff8a3d" stopOpacity="0.18" />
+              <stop offset="100%" stopColor="#ff8a3d" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <path d={areaPath} fill="url(#forecastFill)" stroke="none" />
+          <path d={path} fill="none" stroke={lineColor} strokeWidth="1.5" />
+          {points.map(([x, y], i) => {
+            const active = days[i].date === selectedDate;
+            return active ? (
+              <g key={i}>
+                <line x1={x} y1={y} x2={x} y2={H + 8} stroke={guideColor} strokeDasharray="2 3" />
+                <circle cx={x} cy={y} r="7" fill="#ff8a3d" opacity="0.18" />
+                <circle cx={x} cy={y} r="4" fill="#ff8a3d" />
+              </g>
+            ) : (
+              <circle key={i} cx={x} cy={y} r="2.5" fill={dotColor} />
+            );
+          })}
+        </svg>
+      </div>
 
-              const dayName = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"][dateObj.getDay()];
-              const dateLabel = dateObj.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
-
-              return (
-                <motion.div
-                  key={d.date}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: idx * 0.05 }}
-                  onClick={(e) => {
-                    setSelectedDate(active ? null : d.date);
-                    if (!active) {
-                      e.currentTarget.scrollIntoView({
-                        behavior: "smooth",
-                        inline: "center",
-                        block: "nearest"
-                      });
-                    }
-                  }}
-                  className={`
-                    w-44 p-8 rounded-2xl cursor-pointer flex flex-col items-center gap-6 border-4 transition-all duration-300
-                    ${active
-                      ? "bg-white border-flat-primary scale-110 shadow-[12px_12px_0px_0px_rgba(37,99,235,1)] z-10"
-                      : "bg-white border-flat-border hover:border-slate-400 hover:-translate-y-1"
-                    }
-                  `}
-                >
-                  <div className="text-center">
-                    <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${active ? 'text-flat-primary' : 'text-slate-400'}`}>
-                      {idx === 0 ? "Hôm qua" : idx === 1 ? "Hôm nay" : dayName}
-                    </span>
-                    <div className="text-sm font-black text-flat-fg">{dateLabel}</div>
-                  </div>
-
-                  <span className={`text-6xl ${active ? 'animate-float inline-block' : ''}`}>{info.icon}</span>
-
-                  <div className="text-center">
-                    <div className={`text-3xl font-black leading-none mb-1 ${getTemperatureColor(d.tempMax).text}`}>
-                      {convertTemp(d.tempMax)}°
-                    </div>
-                    <div className="text-sm font-bold text-slate-400">
-                      {convertTemp(d.tempMin)}°
-                    </div>
-                  </div>
-
-                  {/* Sun Info */}
-                  <div className="flex flex-col gap-2 w-full mt-2">
-                    {d.sunrise && (
-                      <div className="flex items-center justify-between px-3 py-1.5 rounded-lg border-2 border-amber-100 bg-amber-50/50">
-                        <Sunrise size={14} className="text-amber-500" />
-                        <span className="text-[10px] font-black tracking-widest text-amber-600">
-                          {new Date(d.sunrise).toLocaleTimeString('vi-VN', { hour: 'numeric', minute: '2-digit' })}
-                        </span>
-                      </div>
-                    )}
-                    {d.sunset && (
-                      <div className="flex items-center justify-between px-3 py-1.5 rounded-lg border-2 border-rose-100 bg-rose-50/50">
-                        <Sunset size={14} className="text-rose-500" />
-                        <span className="text-[10px] font-black tracking-widest text-rose-600">
-                          {new Date(d.sunset).toLocaleTimeString('vi-VN', { hour: 'numeric', minute: '2-digit' })}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {d.uvIndex != null && (
-                    <div className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border-2 w-full text-center ${active ? 'bg-flat-primary/10 border-flat-primary text-flat-primary' : 'bg-flat-muted border-flat-border text-slate-500'}`}>
-                      UV {Math.round(d.uvIndex)}
-                    </div>
-                  )}
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
+      <div className="flex justify-between mt-1">
+        {days.map((d) => {
+          const active = d.date === selectedDate;
+          return (
+            <span
+              key={d.date}
+              className={`font-light transition-all ${active ? "text-2xl text-night-fg font-normal" : "text-lg text-night-muted"}`}
+            >
+              {convertTemp(d.tempMax)}°
+            </span>
+          );
+        })}
       </div>
     </div>
   );
+}
+
+function buildSmoothPath(points: readonly (readonly [number, number])[]): string {
+  if (points.length < 2) return "";
+  let d = `M${points[0][0]},${points[0][1]}`;
+  for (let i = 0; i < points.length - 1; i++) {
+    const [x0, y0] = points[i];
+    const [x1, y1] = points[i + 1];
+    const mx = (x0 + x1) / 2;
+    d += ` C${mx},${y0} ${mx},${y1} ${x1},${y1}`;
+  }
+  return d;
 }

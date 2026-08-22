@@ -1,6 +1,7 @@
 export interface CurrentWeather {
   temperature: number;
   windSpeed: number;
+  windDirection?: number;
   weatherCode: number;
   humidity: number;
   time: string;
@@ -48,6 +49,7 @@ export interface WeatherState {
   lon: number;
   city: string;
   unit: "celsius" | "fahrenheit";
+  theme: "dark" | "light";
   searchHistory: string[];
   pinnedCities: PinnedCity[];
   current: CurrentWeather | null;
@@ -60,6 +62,7 @@ export interface WeatherState {
 
   setCoords: (lat: number, lon: number, city: string) => void;
   setUnit: (unit: "celsius" | "fahrenheit") => void;
+  toggleTheme: () => void;
   togglePinCity: (city: PinnedCity) => void;
   addToHistory: (city: string) => void;
   setForecastDays: (days: number) => void;
